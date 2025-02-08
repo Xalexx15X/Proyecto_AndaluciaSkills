@@ -1,14 +1,15 @@
 package com.andaluciaskills.andaluciasckills.Controller;
 
 
-import com.andaluciaskills.andaluciasckills.Service.UserService;
+import com.andaluciaskills.andaluciasckills.Service.PruebaService;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/pruebas")
 @RequiredArgsConstructor
-public class UserController {
-    private final UserService userService;
+public class PruebaController {
+    private final PruebaService pruebaService;
 }

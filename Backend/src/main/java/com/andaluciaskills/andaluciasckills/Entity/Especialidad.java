@@ -12,7 +12,6 @@ public class Especialidad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idEspecialidad;
-    
     private String nombre;
     private String codigo;
 

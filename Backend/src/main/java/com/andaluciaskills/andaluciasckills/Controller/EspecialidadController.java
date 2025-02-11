@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import com.andaluciaskills.andaluciasckills.Entity.Especialidad;
 import com.andaluciaskills.andaluciasckills.Error.*;
 import com.andaluciaskills.andaluciasckills.Service.EspecialidadService;
-import com.andaluciaskills.andaluciasckills.Service.base.EspecialidadBaseService;
 
 import lombok.RequiredArgsConstructor;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/especialidades")
 @RequiredArgsConstructor
-public class EspecialidadController implements EspecialidadBaseService {
+public class EspecialidadController{
     
     private final EspecialidadService especialidadService;
 
@@ -65,7 +64,7 @@ public class EspecialidadController implements EspecialidadBaseService {
     }
 
     @DeleteMapping("BorrarEspecialidad/{id}")
-    public ResponseEntity<?> deleteEspecialidad(@PathVariable Integer id) {
+    public ResponseEntity<Especialidad> deleteEspecialidad(@PathVariable Integer id) {
         Especialidad especialidad = especialidadService.findById(id)
                 .orElseThrow(() -> new EspecialidadNotFoundException(id));
         

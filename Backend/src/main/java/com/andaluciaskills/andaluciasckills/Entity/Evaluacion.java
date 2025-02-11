@@ -25,4 +25,5 @@ public class Evaluacion {
     @ManyToOne
     @JoinColumn(name = "prueba_idPrueba")
     private Prueba prueba;
+
 }

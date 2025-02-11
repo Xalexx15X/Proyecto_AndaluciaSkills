@@ -6,8 +6,8 @@ import com.andaluciaskills.andaluciasckills.Entity.Especialidad;
 
 public interface EspecialidadBaseService {
     Especialidad save(Especialidad especialidad);
-    Optional<Especialidad> findById(Integer id);  // Cambiado a Integer
+    Optional<Especialidad> findById(Integer id);
     List<Especialidad> findAll();
     Especialidad update(Especialidad especialidad);
-    void delete(Integer id);  // Cambiado a Integer
+    void delete(Integer id);
 }

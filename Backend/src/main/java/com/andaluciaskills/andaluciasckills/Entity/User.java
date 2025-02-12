@@ -18,7 +18,7 @@ public class User {
     private String apellidos;
     private String dni;
 
-    @ManyToOne
+    @ManyToOne 
     @JoinColumn(name = "Especialidad_idEspecialidad")
     private Especialidad especialidad;
 }

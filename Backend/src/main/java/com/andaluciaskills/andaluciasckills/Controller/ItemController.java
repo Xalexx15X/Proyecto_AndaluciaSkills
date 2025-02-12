@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/api/participantes")
+@RequestMapping("/api/item")
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;

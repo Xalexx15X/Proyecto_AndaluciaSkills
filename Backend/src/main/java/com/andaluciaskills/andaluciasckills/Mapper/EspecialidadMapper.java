@@ -1,8 +1,11 @@
 package com.andaluciaskills.andaluciasckills.Mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.andaluciaskills.andaluciasckills.Dto.DtoEspecialidades;
 import com.andaluciaskills.andaluciasckills.Entity.Especialidad;
 
+@Component 
 public class EspecialidadMapper implements GenericMapper<Especialidad, DtoEspecialidades> {
     @Override
     public DtoEspecialidades toDto(Especialidad entity) {
@@ -25,4 +28,4 @@ public class EspecialidadMapper implements GenericMapper<Especialidad, DtoEspeci
         entity.setCodigo(dto.getCodigo());
         return entity;
     }
-}
+}   

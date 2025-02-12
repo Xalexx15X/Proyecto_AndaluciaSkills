@@ -29,7 +29,7 @@ public class EvaluacionController {
     private final EvaluacionService evaluacionService;
 
     @GetMapping
-    public ResponseEntity<List<DtoEvaluancion>> getAllEspecialidades() {
+    public ResponseEntity<List<DtoEvaluancion>> getAllEvaluaciones() {
         List<DtoEvaluancion> result = evaluacionService.findAll();
         if (result.isEmpty()) {
             throw new SearchEvaluacionNoResultException();
@@ -38,7 +38,7 @@ public class EvaluacionController {
     }
 
     @GetMapping("/BuscarEvaluacion/{id}")
-    public ResponseEntity<DtoEvaluancion> getEspecialidad(@PathVariable Integer id) {
+    public ResponseEntity<DtoEvaluancion> getIdEvaluacion(@PathVariable Integer id) {
         return ResponseEntity.ok(
             evaluacionService.findById(id)
                 .orElseThrow(() -> new EvaluacionNotFoundException())
@@ -46,7 +46,7 @@ public class EvaluacionController {
     }
 
     @PostMapping("/CrearEvaluacion")
-    public ResponseEntity<DtoEvaluancion> createEspecialidad(@RequestBody DtoEvaluancion dto) {
+    public ResponseEntity<DtoEvaluancion> createEvaluacion(@RequestBody DtoEvaluancion dto) {
         if (dto.getIdEvaluacion() != null) {
             throw new EvaluacionBadRequestException("No se puede crear una evaluacion con un ID ya existente");
         }
@@ -74,7 +74,7 @@ public class EvaluacionController {
     }
 
     @DeleteMapping("BorrarEvaluacion/{id}")
-    public ResponseEntity<?> deleteEspecialidad(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteEvaluacion(@PathVariable Integer id) {
         evaluacionService.findById(id)
             .orElseThrow(() -> new EvaluacionNotFoundException(id));
         

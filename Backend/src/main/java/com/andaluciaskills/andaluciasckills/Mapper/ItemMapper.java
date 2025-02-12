@@ -1,8 +1,11 @@
 package com.andaluciaskills.andaluciasckills.Mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.andaluciaskills.andaluciasckills.Dto.DtoItem;
 import com.andaluciaskills.andaluciasckills.Entity.Item;
 
+@Component 
 public class ItemMapper implements GenericMapper<Item, DtoItem> {
     @Override
     public DtoItem toDto(Item entity) {

@@ -1,6 +1,8 @@
 package com.andaluciaskills.andaluciasckills.Service;
 
+import com.andaluciaskills.andaluciasckills.Dto.DtoPrueba;
 import com.andaluciaskills.andaluciasckills.Entity.Prueba;
+import com.andaluciaskills.andaluciasckills.Mapper.PruebaMapper;
 import com.andaluciaskills.andaluciasckills.Repository.PruebaRepository;
 import com.andaluciaskills.andaluciasckills.Service.base.PruebaBaseService;
 
@@ -13,25 +15,31 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PruebaService implements PruebaBaseService {
     private final PruebaRepository pruebaRepository;
+    private final PruebaMapper pruebaMapper;
 
     @Override
-    public Prueba save(Prueba prueba) {
-        return pruebaRepository.save(prueba);
+    public DtoPrueba save(DtoPrueba dto) {
+        Prueba prueba = pruebaMapper.toEntity(dto);
+        Prueba savedPrueba = pruebaRepository.save(prueba);
+        return pruebaMapper.toDto(savedPrueba);
     }
 
     @Override
-    public Optional<Prueba> findById(Integer id) {
-        return pruebaRepository.findById(id);
+    public Optional<DtoPrueba> findById(Integer id) {
+        return pruebaRepository.findById(id)
+                .map(pruebaMapper::toDto);
     }
 
     @Override
-    public List<Prueba> findAll() {
-        return pruebaRepository.findAll();
+    public List<DtoPrueba> findAll() {
+        return pruebaMapper.toDtoList(pruebaRepository.findAll());
     }
 
     @Override
-    public Prueba update(Prueba prueba) {
-        return pruebaRepository.save(prueba);
+    public DtoPrueba update(DtoPrueba dto) {
+        Prueba prueba = pruebaMapper.toEntity(dto);
+        Prueba updatedPrueba = pruebaRepository.save(prueba);
+        return pruebaMapper.toDto(updatedPrueba);
     }
 
     @Override

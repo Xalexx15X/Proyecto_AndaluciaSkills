@@ -3,19 +3,21 @@ package com.andaluciaskills.andaluciasckills.Controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.andaluciaskills.andaluciasckills.Entity.Participante;
-import com.andaluciaskills.andaluciasckills.Error.ItemBadRequestException;
-import com.andaluciaskills.andaluciasckills.Error.ItemNotFoundException;
+import com.andaluciaskills.andaluciasckills.Dto.DtoParticipante;
+
+import com.andaluciaskills.andaluciasckills.Error.ParticipanteBadRequestException;
+import com.andaluciaskills.andaluciasckills.Error.ParticipanteNotFoundException;
 import com.andaluciaskills.andaluciasckills.Error.SearchParticipanteNoResultException;
 import com.andaluciaskills.andaluciasckills.Service.ParticipanteService;
 
@@ -28,45 +30,54 @@ public class ParticipanteController {
     private final ParticipanteService participanteService;
 
     @GetMapping
-    public ResponseEntity<List<Participante>> getAllParticipantes() {
-        List<Participante> result = participanteService.findAll();
-        if (result.isEmpty()) {
+    public ResponseEntity<List<DtoParticipante>> getAllParticipantes() {
+        List<DtoParticipante> result = participanteService.findAll();
+        if (result.isEmpty()) { 
             throw new SearchParticipanteNoResultException();
         }
         return ResponseEntity.ok(result);
     }
-    
-    @GetMapping("/BuscarParticipante/{id}")
-    public ResponseEntity<Participante> getParticipante(@RequestParam Integer id) {
+
+    @GetMapping("/BuscasParticipante/{id}")
+    public ResponseEntity<DtoParticipante> getParticipante(@PathVariable Integer id) {
         return ResponseEntity.ok(
             participanteService.findById(id)
-                .orElseThrow(() -> new SearchParticipanteNoResultException())
+                .orElseThrow(() -> new ParticipanteNotFoundException())
         );
     }
 
+    @PostMapping("/CrearParticipante")
+    public ResponseEntity<DtoParticipante> createPaerticipantes(@RequestBody DtoParticipante dto) {
+        if (dto.getIdParticipante() != null) {
+            throw new ParticipanteBadRequestException("No se puede crear un participante con un ID ya existente");
+        }
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(participanteService.save(dto));
+    }
+
     @PutMapping("ModificarParticipante/{id}")
-    public ResponseEntity<Participante> updateParticipante(
+    public ResponseEntity<DtoParticipante> updateParticipante(
             @PathVariable Integer id, 
-            @RequestBody Participante participante) {
+            @RequestBody DtoParticipante dto) {
         
-        if (!id.equals(participante.getIdParticipante())) {
-            throw new ItemBadRequestException("El ID de la ruta no coincide con el ID del objeto");
+        if (!id.equals(dto.getIdParticipante())) {
+            throw new ParticipanteBadRequestException("El ID de la ruta no coincide con el ID del objeto");
         }
         
         return ResponseEntity.ok(
             participanteService.findById(id)
                 .map(e -> {
-                    participante.setIdParticipante(id);
-                    return participanteService.save(participante);
+                    dto.setIdParticipante(id);
+                    return participanteService.save(dto);
                 })
-                .orElseThrow(() -> new ItemNotFoundException(id))
+                .orElseThrow(() -> new ParticipanteNotFoundException(id))
         );
     }
 
     @DeleteMapping("BorrarParticipante/{id}")
-    public ResponseEntity<Participante> deleteParticipante(@PathVariable Integer id) {
-        Participante participante = participanteService.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException(id));
+    public ResponseEntity<?> deleteParticipante(@PathVariable Integer id) {
+        participanteService.findById(id)
+            .orElseThrow(() -> new ParticipanteNotFoundException(id));
         participanteService.delete(id);
         return ResponseEntity.noContent().build();
     }

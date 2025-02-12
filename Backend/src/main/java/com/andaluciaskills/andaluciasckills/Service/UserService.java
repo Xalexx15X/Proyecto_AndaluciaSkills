@@ -2,7 +2,9 @@ package com.andaluciaskills.andaluciasckills.Service;
 
 import org.springframework.stereotype.Service;
 
+import com.andaluciaskills.andaluciasckills.Dto.DtoUser;
 import com.andaluciaskills.andaluciasckills.Entity.User;
+import com.andaluciaskills.andaluciasckills.Mapper.UserMapper;
 import com.andaluciaskills.andaluciasckills.Repository.UserRepository;
 import com.andaluciaskills.andaluciasckills.Service.base.UserBaseService;
 
@@ -14,25 +16,31 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService implements UserBaseService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
-    public User save(User user) {
-        return userRepository.save(user);
+    public DtoUser save(DtoUser dto) {
+        User user = userMapper.toEntity(dto);
+        User savedUser = userRepository.save(user);
+        return userMapper.toDto(savedUser);
     }
 
     @Override
-    public Optional<User> findById(Integer id) {
-        return userRepository.findById(id);
+    public Optional<DtoUser> findById(Integer id) {
+        return userRepository.findById(id)
+                .map(userMapper::toDto);
     }
 
     @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<DtoUser> findAll() {
+        return userMapper.toDtoList(userRepository.findAll());
     }
 
     @Override
-    public User update(User user) {
-        return userRepository.save(user);
+    public DtoUser update(DtoUser dto) {
+        User user = userMapper.toEntity(dto);
+        User updatedUser = userRepository.save(user);
+        return userMapper.toDto(updatedUser);
     }
 
     @Override

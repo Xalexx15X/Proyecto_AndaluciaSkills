@@ -1,5 +1,9 @@
 package com.andaluciaskills.andaluciasckills.Dto;
 
-public class DtoEvaluacionItem {
+import lombok.Data;
 
+@Data
+public class DtoEvaluacionItem {
+    private Integer idEvaluacionItem;
+    private Integer valoracion;
 }

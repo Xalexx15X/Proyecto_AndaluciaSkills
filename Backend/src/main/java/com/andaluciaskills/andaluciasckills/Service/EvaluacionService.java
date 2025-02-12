@@ -1,6 +1,8 @@
 package com.andaluciaskills.andaluciasckills.Service;
 
+import com.andaluciaskills.andaluciasckills.Dto.DtoEvaluancion;
 import com.andaluciaskills.andaluciasckills.Entity.Evaluacion;
+import com.andaluciaskills.andaluciasckills.Mapper.EvaluacionMapper;
 import com.andaluciaskills.andaluciasckills.Repository.EvaluacionRepository;
 import com.andaluciaskills.andaluciasckills.Service.base.EvaluacionBaseService;
 
@@ -14,25 +16,31 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EvaluacionService implements EvaluacionBaseService {
     private final EvaluacionRepository evaluacionRepository;
+    private final EvaluacionMapper evaluacionMapper;
 
     @Override
-    public Evaluacion save(Evaluacion evaluacion) {
-        return evaluacionRepository.save(evaluacion);
+    public DtoEvaluancion save(DtoEvaluancion dto) {
+        Evaluacion evaluacion = evaluacionMapper.toEntity(dto);
+        Evaluacion savedEvaluacion = evaluacionRepository.save(evaluacion);
+        return evaluacionMapper.toDto(savedEvaluacion);
     }
 
     @Override
-    public Optional<Evaluacion> findById(Integer id) {
-        return evaluacionRepository.findById(id);
+    public Optional<DtoEvaluancion> findById(Integer id) {
+        return evaluacionRepository.findById(id)
+                .map(evaluacionMapper::toDto);
     }
 
     @Override
-    public List<Evaluacion> findAll() {
-        return evaluacionRepository.findAll();
+    public List<DtoEvaluancion> findAll() {
+        return evaluacionMapper.toDtoList(evaluacionRepository.findAll());
     }
 
     @Override
-    public Evaluacion update(Evaluacion evaluacion) {
-        return evaluacionRepository.save(evaluacion);
+    public DtoEvaluancion update(DtoEvaluancion dto) {
+        Evaluacion evaluacion = evaluacionMapper.toEntity(dto);
+        Evaluacion updatedEvaluacion = evaluacionRepository.save(evaluacion);
+        return evaluacionMapper.toDto(updatedEvaluacion);
     }
 
     @Override

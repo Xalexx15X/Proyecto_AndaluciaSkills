@@ -11,10 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.andaluciaskills.andaluciasckills.Entity.Evaluacion;
+import com.andaluciaskills.andaluciasckills.Dto.DtoEvaluancion;
 import com.andaluciaskills.andaluciasckills.Error.EvaluacionBadRequestException;
 import com.andaluciaskills.andaluciasckills.Error.EvaluacionNotFoundException;
 import com.andaluciaskills.andaluciasckills.Error.SearchEvaluacionNoResultException;
@@ -26,11 +25,12 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/evaluacion")
 @RequiredArgsConstructor
 public class EvaluacionController {
+    
     private final EvaluacionService evaluacionService;
 
     @GetMapping
-    public ResponseEntity<List<Evaluacion>> getAllEspecialidades() {
-        List<Evaluacion> result = evaluacionService.findAll();
+    public ResponseEntity<List<DtoEvaluancion>> getAllEspecialidades() {
+        List<DtoEvaluancion> result = evaluacionService.findAll();
         if (result.isEmpty()) {
             throw new SearchEvaluacionNoResultException();
         }
@@ -38,48 +38,47 @@ public class EvaluacionController {
     }
 
     @GetMapping("/BuscarEvaluacion/{id}")
-    public ResponseEntity<Evaluacion> getEvaluacion(@RequestParam Integer id) {
+    public ResponseEntity<DtoEvaluancion> getEspecialidad(@PathVariable Integer id) {
         return ResponseEntity.ok(
             evaluacionService.findById(id)
-                .orElseThrow(() -> new SearchEvaluacionNoResultException())
+                .orElseThrow(() -> new EvaluacionNotFoundException())
         );
     }
 
     @PostMapping("/CrearEvaluacion")
-    public ResponseEntity<Evaluacion> createEspecialidad(@RequestBody Evaluacion evaluacion) {
-        if (evaluacion.getIdEvaluacion() != null) {
-            throw new EvaluacionBadRequestException("No se puede crear una especialidad con un ID ya existente");
+    public ResponseEntity<DtoEvaluancion> createEspecialidad(@RequestBody DtoEvaluancion dto) {
+        if (dto.getIdEvaluacion() != null) {
+            throw new EvaluacionBadRequestException("No se puede crear una evaluacion con un ID ya existente");
         }
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(evaluacionService.save(evaluacion));
+            .body(evaluacionService.save(dto));
     }
 
     @PutMapping("ModificarEvaluacion/{id}")
-    public ResponseEntity<Evaluacion> updateEvaluacion(
+    public ResponseEntity<DtoEvaluancion> updateEvaluacion(
             @PathVariable Integer id, 
-            @RequestBody Evaluacion evaluacion) {
+            @RequestBody DtoEvaluancion dto) {
         
-        if (!id.equals(evaluacion.getIdEvaluacion())) {
+        if (!id.equals(dto.getIdEvaluacion())) {
             throw new EvaluacionBadRequestException("El ID de la ruta no coincide con el ID del objeto");
         }
         
         return ResponseEntity.ok(
             evaluacionService.findById(id)
                 .map(e -> {
-                    evaluacion.setIdEvaluacion(id);
-                    return evaluacionService.save(evaluacion);
+                    dto.setIdEvaluacion(id);
+                    return evaluacionService.save(dto);
                 })
                 .orElseThrow(() -> new EvaluacionNotFoundException(id))
         );
     }
 
     @DeleteMapping("BorrarEvaluacion/{id}")
-    public ResponseEntity<Evaluacion> deleteEvaluacion(@PathVariable Integer id) {
-        Evaluacion evaluacion = evaluacionService.findById(id)
-                .orElseThrow(() -> new EvaluacionNotFoundException(id));
+    public ResponseEntity<?> deleteEspecialidad(@PathVariable Integer id) {
+        evaluacionService.findById(id)
+            .orElseThrow(() -> new EvaluacionNotFoundException(id));
         
         evaluacionService.delete(id);
         return ResponseEntity.noContent().build();
     }
-    
 }

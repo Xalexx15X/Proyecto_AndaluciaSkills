@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.andaluciaskills.andaluciasckills.Entity.Especialidad;
+import com.andaluciaskills.andaluciasckills.Dto.DtoEspecialidades;
 import com.andaluciaskills.andaluciasckills.Error.*;
 import com.andaluciaskills.andaluciasckills.Service.EspecialidadService;
 
@@ -19,8 +19,8 @@ public class EspecialidadController{
     private final EspecialidadService especialidadService;
 
     @GetMapping
-    public ResponseEntity<List<Especialidad>> getAllEspecialidades() {
-        List<Especialidad> result = especialidadService.findAll();
+    public ResponseEntity<List<DtoEspecialidades>> getAllEspecialidades() {
+        List<DtoEspecialidades> result = especialidadService.findAll();
         if (result.isEmpty()) {
             throw new SearchEspecialidadNoResultException();
         }
@@ -28,7 +28,7 @@ public class EspecialidadController{
     }
 
     @GetMapping("/BuscarEspecialidad/{id}")
-    public ResponseEntity<Especialidad> getEspecialidad(@PathVariable Integer id) {
+    public ResponseEntity<DtoEspecialidades> getEspecialidad(@PathVariable Integer id) {
         return ResponseEntity.ok(
             especialidadService.findById(id)
                 .orElseThrow(() -> new EspecialidadNotFoundException())
@@ -36,37 +36,37 @@ public class EspecialidadController{
     }
 
     @PostMapping("/CrearEspecialidad")
-    public ResponseEntity<Especialidad> createEspecialidad(@RequestBody Especialidad especialidad) {
-        if (especialidad.getIdEspecialidad() != null) {
+    public ResponseEntity<DtoEspecialidades> createEspecialidad(@RequestBody DtoEspecialidades dto) {
+        if (dto.getIdEspecialidad() != null) {
             throw new EspecialidadBadRequestException("No se puede crear una especialidad con un ID ya existente");
         }
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(especialidadService.save(especialidad));
+            .body(especialidadService.save(dto));
     }
 
     @PutMapping("ModificarEspecialidad/{id}")
-    public ResponseEntity<Especialidad> updateEspecialidad(
+    public ResponseEntity<DtoEspecialidades> updateEspecialidad(
             @PathVariable Integer id, 
-            @RequestBody Especialidad especialidad) {
+            @RequestBody DtoEspecialidades dto) {
         
-        if (!id.equals(especialidad.getIdEspecialidad())) {
+        if (!id.equals(dto.getIdEspecialidad())) {
             throw new EspecialidadBadRequestException("El ID de la ruta no coincide con el ID del objeto");
         }
         
         return ResponseEntity.ok(
             especialidadService.findById(id)
                 .map(e -> {
-                    especialidad.setIdEspecialidad(id);
-                    return especialidadService.save(especialidad);
+                    dto.setIdEspecialidad(id);
+                    return especialidadService.save(dto);
                 })
                 .orElseThrow(() -> new EspecialidadNotFoundException(id))
         );
     }
 
     @DeleteMapping("BorrarEspecialidad/{id}")
-    public ResponseEntity<Especialidad> deleteEspecialidad(@PathVariable Integer id) {
-        Especialidad especialidad = especialidadService.findById(id)
-                .orElseThrow(() -> new EspecialidadNotFoundException(id));
+    public ResponseEntity<?> deleteEspecialidad(@PathVariable Integer id) {
+        especialidadService.findById(id)
+            .orElseThrow(() -> new EspecialidadNotFoundException(id));
         
         especialidadService.delete(id);
         return ResponseEntity.noContent().build();

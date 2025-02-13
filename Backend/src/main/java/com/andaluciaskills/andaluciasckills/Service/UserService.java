@@ -1,6 +1,7 @@
 package com.andaluciaskills.andaluciasckills.Service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.andaluciaskills.andaluciasckills.Dto.DtoUser;
 import com.andaluciaskills.andaluciasckills.Entity.User;
@@ -17,9 +18,13 @@ import java.util.Optional;
 public class UserService implements UserBaseService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public DtoUser save(DtoUser dto) {
+        if (dto.getPassword() != null) {
+            dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
         User user = userMapper.toEntity(dto);
         User savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);
@@ -46,5 +51,9 @@ public class UserService implements UserBaseService {
     @Override
     public void delete(Integer id) {
         userRepository.deleteById(id);
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }

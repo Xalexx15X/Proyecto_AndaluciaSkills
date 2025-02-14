@@ -4,8 +4,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.andaluciaskills.andaluciasckills.Dto.DtoUser;
+import com.andaluciaskills.andaluciasckills.Dto.UserRegisterDTO;
+import com.andaluciaskills.andaluciasckills.Entity.Especialidad;
 import com.andaluciaskills.andaluciasckills.Entity.User;
 import com.andaluciaskills.andaluciasckills.Mapper.UserMapper;
+import com.andaluciaskills.andaluciasckills.Repository.EspecialidadRepository;
 import com.andaluciaskills.andaluciasckills.Repository.UserRepository;
 import com.andaluciaskills.andaluciasckills.Service.base.UserBaseService;
 
@@ -19,6 +22,7 @@ public class UserService implements UserBaseService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final EspecialidadRepository especialidadRepository; // Añade esta inyección
 
     @Override
     public DtoUser save(DtoUser dto) {
@@ -55,5 +59,29 @@ public class UserService implements UserBaseService {
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public User registerUser(UserRegisterDTO registerDTO) {
+        // Verificar si el usuario ya existe
+        if (userRepository.findByUsername(registerDTO.getUsername()).isPresent()) {
+            throw new RuntimeException("El nombre de usuario ya existe");
+        }
+
+        // Buscar la especialidad
+        Especialidad especialidad = especialidadRepository
+            .findById(registerDTO.getEspecialidad_idEspecialidad())
+            .orElseThrow(() -> new RuntimeException("Especialidad no encontrada"));
+
+        // Crear nuevo usuario
+        User user = new User();
+        user.setUsername(registerDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        user.setNombre(registerDTO.getNombre());
+        user.setApellidos(registerDTO.getApellidos());
+        user.setDni(registerDTO.getDni());
+        user.setRole(registerDTO.getRole());
+        user.setEspecialidad(especialidad); // Aquí establecemos la relación correctamente
+
+        return userRepository.save(user);
     }
 }

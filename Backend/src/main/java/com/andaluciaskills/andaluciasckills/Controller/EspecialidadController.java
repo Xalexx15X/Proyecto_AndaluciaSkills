@@ -67,7 +67,6 @@ public class EspecialidadController{
     public ResponseEntity<?> deleteEspecialidad(@PathVariable Integer id) {
         especialidadService.findById(id)
             .orElseThrow(() -> new EspecialidadNotFoundException(id));
-        
         especialidadService.delete(id);
         return ResponseEntity.noContent().build();
     }

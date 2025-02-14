@@ -2,6 +2,7 @@ package com.andaluciaskills.andaluciasckills.Controller;
 
 import com.andaluciaskills.andaluciasckills.Dto.AuthResponseDTO;
 import com.andaluciaskills.andaluciasckills.Dto.DtoUser;
+import com.andaluciaskills.andaluciasckills.Dto.UserRegisterDTO;
 import com.andaluciaskills.andaluciasckills.Entity.User;
 import com.andaluciaskills.andaluciasckills.Security.JwtTokenProvider;
 import com.andaluciaskills.andaluciasckills.Service.UserService;
@@ -26,7 +27,7 @@ public class AuthController {
 
     @PostMapping("/login") // Endpoint para login: POST /api/auth/login
     public ResponseEntity<AuthResponseDTO> login(@RequestBody DtoUser loginDto) {
-        // Intenta autenticar al usuario con las credenciales proporcionadas
+        // Intenta autenticar al usuario con las credenciales proporcionadas                                                    
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
         );
@@ -40,5 +41,15 @@ public class AuthController {
 
         // Devuelve el token y datos del usuario
         return ResponseEntity.ok(new AuthResponseDTO(token, user.getUsername(), user.getRole()));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody UserRegisterDTO userRegisterDTO) {
+        try {
+            userService.registerUser(userRegisterDTO);
+            return ResponseEntity.ok("Usuario registrado exitosamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

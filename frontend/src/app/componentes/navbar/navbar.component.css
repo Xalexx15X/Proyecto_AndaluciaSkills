@@ -1,11 +1,58 @@
-.navbar {
-    background-color: #ffffff;
-  }
-  
-  .navbar-brand img {
-    max-height: 40px;
-  }
-  
-  .nav-text {
-    font-weight: bold;
-  }
+.custom-navbar {
+  background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+  padding: 1rem 0;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+}
+
+.navbar-brand img {
+  filter: brightness(0) invert(1);
+  transition: transform 0.3s ease;
+}
+
+.navbar-brand img:hover {
+  transform: scale(1.05);
+}
+
+.nav-link {
+  color: white !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  transform: translateY(-2px);
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+.custom-btn-login {
+  background: white;
+  color: #000DFF;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.custom-btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.custom-btn-logout {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.custom-btn-logout:hover {
+  background: white;
+  color: #000DFF;
+}
+
+.nav-text {
+  color: white;
+  font-weight: 500;
+}

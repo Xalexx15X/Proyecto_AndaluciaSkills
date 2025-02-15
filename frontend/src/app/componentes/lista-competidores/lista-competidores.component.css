@@ -1,0 +1,56 @@
+.competidores-container {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: calc(100vh - 76px);
+  }
+  
+  h2 {
+    color: #2d3436;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 15px;
+  }
+  
+  h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+  }
+  
+  .custom-table {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .custom-table thead {
+    background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+    color: white;
+  }
+  
+  .custom-table th {
+    border: none;
+    padding: 15px;
+    font-weight: 500;
+  }
+  
+  .custom-table td {
+    padding: 15px;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+  }
+  
+  .custom-table tbody tr {
+    transition: all 0.3s ease;
+  }
+  
+  .custom-table tbody tr:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }

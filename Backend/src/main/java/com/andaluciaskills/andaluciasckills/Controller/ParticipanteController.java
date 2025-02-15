@@ -1,27 +1,16 @@
-
 package com.andaluciaskills.andaluciasckills.Controller;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.andaluciaskills.andaluciasckills.Dto.DtoParticipante;
-
 import com.andaluciaskills.andaluciasckills.Error.ParticipanteBadRequestException;
 import com.andaluciaskills.andaluciasckills.Error.ParticipanteNotFoundException;
 import com.andaluciaskills.andaluciasckills.Error.SearchParticipanteNoResultException;
 import com.andaluciaskills.andaluciasckills.Service.ParticipanteService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/participantes")
@@ -32,7 +21,7 @@ public class ParticipanteController {
     @GetMapping
     public ResponseEntity<List<DtoParticipante>> getAllParticipantes() {
         List<DtoParticipante> result = participanteService.findAll();
-        if (result.isEmpty()) { 
+        if (result.isEmpty()) {
             throw new SearchParticipanteNoResultException();
         }
         return ResponseEntity.ok(result);
@@ -47,7 +36,7 @@ public class ParticipanteController {
     }
 
     @PostMapping("/CrearParticipante")
-    public ResponseEntity<DtoParticipante> createPaerticipantes(@RequestBody DtoParticipante dto) {
+    public ResponseEntity<DtoParticipante> createParticipante(@RequestBody DtoParticipante dto) {
         if (dto.getIdParticipante() != null) {
             throw new ParticipanteBadRequestException("No se puede crear un participante con un ID ya existente");
         }
@@ -57,13 +46,13 @@ public class ParticipanteController {
 
     @PutMapping("ModificarParticipante/{id}")
     public ResponseEntity<DtoParticipante> updateParticipante(
-            @PathVariable Integer id, 
+            @PathVariable Integer id,
             @RequestBody DtoParticipante dto) {
-        
+
         if (!id.equals(dto.getIdParticipante())) {
             throw new ParticipanteBadRequestException("El ID de la ruta no coincide con el ID del objeto");
         }
-        
+
         return ResponseEntity.ok(
             participanteService.findById(id)
                 .map(e -> {
@@ -81,5 +70,4 @@ public class ParticipanteController {
         participanteService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 }

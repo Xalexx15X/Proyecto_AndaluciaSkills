@@ -20,12 +20,8 @@ export class ListaCompetidoresComponent implements OnInit {
 
   obtenerCompetidores(): void {
     this.competidorService.getCompetidores().subscribe(
-      (data: any[]) => {
-        this.competidores = data;
-      },
-      error => {
-        console.error('Error al obtener la lista de competidores:', error);
-      }
+      data => this.competidores = data,
+      error => console.error('Error al obtener competidores:', error)
     );
   }
 }

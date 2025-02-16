@@ -1,3 +1,4 @@
+// frontend/src/app/servicios/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
@@ -44,8 +45,6 @@ export class AuthService {
   iniciarSesion(nombreUsuario: string, contraseña: string): Observable<any> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     
-    console.log('Intentando login con:', { username: nombreUsuario, password: contraseña });
-    
     return this.http.post(`${this.apiUrl}/login`, 
       { 
         username: nombreUsuario, 
@@ -61,7 +60,6 @@ export class AuthService {
         this.guardarSesion();
       }),
       catchError((error) => {
-        console.error('Error en login:', error);
         return throwError(() => error);
       })
     );
@@ -79,5 +77,9 @@ export class AuthService {
     return new HttpHeaders({
       'Authorization': `Bearer ${this.token}`
     });
+  }
+
+  esAdmin(): boolean {
+    return this.rol === 'ROLE_ADMIN';
   }
 }

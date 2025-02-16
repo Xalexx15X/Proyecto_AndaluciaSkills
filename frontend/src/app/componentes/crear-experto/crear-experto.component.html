@@ -1,0 +1,48 @@
+<div class="container mt-4">
+    <h2 class="text-center mb-4">{{isEditing ? 'Editar' : 'Crear'}} Experto</h2>
+    <form (ngSubmit)="onSubmit()" #expertoForm="ngForm">
+      <div class="form-group mb-3">
+        <label for="username" class="form-label">Nombre de Usuario</label>
+        <input type="text" [(ngModel)]="experto.username" name="username" class="form-control" required>
+      </div>
+      
+      <div class="form-group mb-3" *ngIf="!isEditing">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" [(ngModel)]="experto.password" name="password" class="form-control" required>
+      </div>
+  
+      <div class="form-group mb-3">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input type="text" [(ngModel)]="experto.nombre" name="nombre" class="form-control" required>
+      </div>
+  
+      <div class="form-group mb-3">
+        <label for="apellidos" class="form-label">Apellidos</label>
+        <input type="text" [(ngModel)]="experto.apellidos" name="apellidos" class="form-control" required>
+      </div>
+  
+      <div class="form-group mb-3">
+        <label for="dni" class="form-label">DNI</label>
+        <input type="text" [(ngModel)]="experto.dni" name="dni" class="form-control" required>
+      </div>
+  
+      <div class="form-group mb-3">
+        <label for="especialidad" class="form-label">Especialidad</label>
+        <select 
+          class="form-control" 
+          id="especialidad" 
+          name="especialidad_idEspecialidad" 
+          [(ngModel)]="experto.especialidad_idEspecialidad" 
+          required>
+          <option [ngValue]="null">Seleccione una especialidad</option>
+          <option *ngFor="let especialidad of especialidades" [ngValue]="especialidad.idEspecialidad">
+            {{especialidad.nombre}}
+          </option>
+        </select>
+      </div>
+  
+      <button type="submit" class="btn btn-primary w-100" [disabled]="!expertoForm.form.valid">
+        {{isEditing ? 'Actualizar' : 'Crear'}}
+      </button>
+    </form>
+  </div>

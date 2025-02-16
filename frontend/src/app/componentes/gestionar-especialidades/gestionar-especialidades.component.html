@@ -1,0 +1,28 @@
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Gestionar Especialidades</h2>
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-primary" routerLink="/crear-especialidad">Nueva Especialidad</button>
+  </div>
+  <div class="table-responsive">
+    <table class="table custom-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let especialidad of especialidades">
+          <td>{{ especialidad.idEspecialidad }}</td>
+          <td>{{ especialidad.nombre }}</td>
+          <td>
+            <button class="btn btn-info btn-sm" (click)="verEspecialidad(especialidad.idEspecialidad)">Ver</button>
+            <button class="btn btn-warning btn-sm" (click)="editarEspecialidad(especialidad.idEspecialidad)">Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="borrarEspecialidad(especialidad.idEspecialidad)">Borrar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

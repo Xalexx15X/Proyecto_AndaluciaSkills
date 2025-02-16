@@ -13,4 +13,9 @@ export class CompetidorService {
   getCompetidores(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
+
+  getCompetidor(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/BuscarParticipante/${id}`);
+  }
+
 }

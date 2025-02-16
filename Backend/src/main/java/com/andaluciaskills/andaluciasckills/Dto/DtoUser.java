@@ -15,4 +15,5 @@ public class DtoUser {
     private String dni;
     @JsonProperty("Especialidad_idEspecialidad")
     private Integer especialidad_idEspecialidad;
+    private String nombreEspecialidad;
 }

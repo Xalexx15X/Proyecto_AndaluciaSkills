@@ -29,6 +29,7 @@ public class UserMapper implements GenericMapper<User, DtoUser> {
         
         if (entity.getEspecialidad() != null) {
             dto.setEspecialidad_idEspecialidad(entity.getEspecialidad().getIdEspecialidad());
+            dto.setNombre(entity.getEspecialidad().getNombre());
         }
         
         return dto;

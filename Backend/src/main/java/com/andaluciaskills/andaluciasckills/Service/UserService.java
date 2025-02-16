@@ -22,7 +22,7 @@ public class UserService implements UserBaseService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final EspecialidadRepository especialidadRepository; // Añade esta inyección
+    private final EspecialidadRepository especialidadRepository;
 
     @Override
     public DtoUser save(DtoUser dto) {
@@ -83,5 +83,15 @@ public class UserService implements UserBaseService {
         user.setEspecialidad(especialidad); // Aquí establecemos la relación correctamente
 
         return userRepository.save(user);
+    }
+
+    // Métodos para manejar las operaciones de expertos
+    public List<DtoUser> findAllExpertos() {
+        return userMapper.toDtoList(userRepository.findByRole("ROLE_EXPERTO"));
+    }
+
+    public Optional<DtoUser> findExpertoById(Integer id) {
+        return userRepository.findByIdUserAndRole(id, "ROLE_EXPERTO")
+                .map(userMapper::toDto);
     }
 }

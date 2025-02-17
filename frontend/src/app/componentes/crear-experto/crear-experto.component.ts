@@ -19,7 +19,7 @@ export class CrearExpertoComponent implements OnInit {
     apellidos: '',
     dni: '',
     role: 'ROLE_EXPERTO',
-    especialidad_idEspecialidad: null
+    especialidad_id_especialidad: null
   };
   especialidades: any[] = [];
   isEditing = false;
@@ -40,7 +40,7 @@ export class CrearExpertoComponent implements OnInit {
         data => {
           this.experto = {
             ...data,
-            especialidad_idEspecialidad: data.especialidad?.idEspecialidad
+            especialidad_id_especialidad: data.especialidad?.idEspecialidad
           };
         }
       );
@@ -57,15 +57,15 @@ export class CrearExpertoComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log('Especialidad ID antes de convertir:', this.experto.especialidad_idEspecialidad);
+    console.log('Especialidad ID antes de convertir:', this.experto.especialidad_id_especialidad);
     
-    if (this.experto.especialidad_idEspecialidad) {
-        this.experto.especialidad_idEspecialidad = Number(this.experto.especialidad_idEspecialidad);
-        console.log('Especialidad ID después de convertir:', this.experto.especialidad_idEspecialidad);
+    if (this.experto.especialidad_id_especialidad) {
+        this.experto.especialidad_id_especialidad = Number(this.experto.especialidad_id_especialidad);
+        console.log('Especialidad ID después de convertir:', this.experto.especialidad_id_especialidad);
     }
     
     const especialidadSeleccionada = this.especialidades.find(
-        esp => esp.idEspecialidad === this.experto.especialidad_idEspecialidad
+        esp => esp.idEspecialidad === this.experto.especialidad_id_especialidad
     );
     
     console.log('Especialidad seleccionada:', especialidadSeleccionada);

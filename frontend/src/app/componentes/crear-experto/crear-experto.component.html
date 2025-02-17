@@ -31,8 +31,8 @@
         <select 
           class="form-control" 
           id="especialidad" 
-          name="especialidad_idEspecialidad" 
-          [(ngModel)]="experto.especialidad_idEspecialidad" 
+          name="especialidad_id_especialidad" 
+          [(ngModel)]="experto.especialidad_id_especialidad" 
           required>
           <option [ngValue]="null">Seleccione una especialidad</option>
           <option *ngFor="let especialidad of especialidades" [ngValue]="especialidad.idEspecialidad">

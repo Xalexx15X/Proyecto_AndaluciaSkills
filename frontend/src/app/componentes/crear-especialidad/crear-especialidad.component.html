@@ -3,6 +3,8 @@
     <div class="form-group mb-3">
       <label for="nombre" class="form-label">Nombre</label>
       <input type="text" [(ngModel)]="especialidad.nombre" name="nombre" class="form-control" required>
+      <label for="nombre" class="form-label">Codigo</label>
+      <input type="text" [(ngModel)]="especialidad.codigo" name="codigo" class="form-control" required>
     </div>
 
     <button type="submit" class="btn btn-primary w-100" [disabled]="!especialidadForm.form.valid">

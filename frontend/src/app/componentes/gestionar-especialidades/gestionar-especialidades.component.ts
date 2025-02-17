@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { EspecialidadService } from '../../servicios/especialidad.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-gestionar-especialidades',
   templateUrl: './gestionar-especialidades.component.html',
   styleUrls: ['./gestionar-especialidades.component.css'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, RouterModule]
 })
 export class GestionarEspecialidadesComponent implements OnInit {
   especialidades: any[] = [];

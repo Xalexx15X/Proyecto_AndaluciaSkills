@@ -69,7 +69,7 @@ public class UserService implements UserBaseService {
 
         // Buscar la especialidad
         Especialidad especialidad = especialidadRepository
-            .findById(registerDTO.getEspecialidad_idEspecialidad())
+            .findById(registerDTO.getEspecialidadIdEspecialidad())
             .orElseThrow(() -> new RuntimeException("Especialidad no encontrada"));
 
         // Crear nuevo usuario

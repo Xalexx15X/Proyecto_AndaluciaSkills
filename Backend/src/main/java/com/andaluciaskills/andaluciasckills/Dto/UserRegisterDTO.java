@@ -1,5 +1,7 @@
 package com.andaluciaskills.andaluciasckills.Dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 @Data
@@ -10,5 +12,6 @@ public class UserRegisterDTO {
     private String apellidos;
     private String dni;
     private String role;
-    private Integer especialidad_idEspecialidad;
+    @JsonProperty("especialidad_id_especialidad")
+    private Integer especialidadIdEspecialidad;
 }

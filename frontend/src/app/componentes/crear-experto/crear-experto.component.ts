@@ -57,12 +57,25 @@ export class CrearExpertoComponent implements OnInit {
   }
 
   onSubmit() {
-    // Asegurarse de que el ID de especialidad sea un número
+    console.log('Especialidad ID antes de convertir:', this.experto.especialidad_idEspecialidad);
+    
     if (this.experto.especialidad_idEspecialidad) {
-      this.experto.especialidad_idEspecialidad = Number(this.experto.especialidad_idEspecialidad);
+        this.experto.especialidad_idEspecialidad = Number(this.experto.especialidad_idEspecialidad);
+        console.log('Especialidad ID después de convertir:', this.experto.especialidad_idEspecialidad);
+    }
+    
+    const especialidadSeleccionada = this.especialidades.find(
+        esp => esp.idEspecialidad === this.experto.especialidad_idEspecialidad
+    );
+    
+    console.log('Especialidad seleccionada:', especialidadSeleccionada);
+    
+    if (especialidadSeleccionada) {
+        this.experto.nombreEspecialidad = especialidadSeleccionada.nombre;
     }
 
-    console.log('Datos a enviar:', this.experto); // Para depuración
+    // Log del objeto completo antes de enviarlo
+    console.log('Objeto experto a enviar:', this.experto);
 
     if (this.isEditing) {
       this.expertoService.editarExperto(this.experto.idUser, this.experto).subscribe(

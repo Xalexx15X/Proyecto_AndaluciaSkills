@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../servicios/auth.service';
 
@@ -11,9 +11,10 @@ import { AuthService } from '../../servicios/auth.service';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
-  constructor(public authService: AuthService) { }
+  constructor(public authService: AuthService, private router: Router) { }
 
   cerrarSesion() {
     this.authService.cerrarSesion();
+    this.router.navigate(['/']);
   }
 }

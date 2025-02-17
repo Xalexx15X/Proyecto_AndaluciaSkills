@@ -13,7 +13,7 @@ public class DtoUser {
     private String nombre;
     private String apellidos;
     private String dni;
-    @JsonProperty("Especialidad_idEspecialidad")
-    private Integer especialidad_idEspecialidad;
+    @JsonProperty("especialidad_id_especialidad")
+    private Integer especialidadIdEspecialidad;
     private String nombreEspecialidad;
 }

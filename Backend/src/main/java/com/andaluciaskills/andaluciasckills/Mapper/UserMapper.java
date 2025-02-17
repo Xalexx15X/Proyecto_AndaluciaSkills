@@ -28,8 +28,8 @@ public class UserMapper implements GenericMapper<User, DtoUser> {
         dto.setDni(entity.getDni());
         
         if (entity.getEspecialidad() != null) {
-            dto.setEspecialidad_idEspecialidad(entity.getEspecialidad().getIdEspecialidad());
-            dto.setNombre(entity.getEspecialidad().getNombre());
+            dto.setEspecialidadIdEspecialidad(entity.getEspecialidad().getIdEspecialidad());
+            dto.setNombreEspecialidad(entity.getEspecialidad().getNombre());
         }
         
         return dto;
@@ -48,9 +48,9 @@ public class UserMapper implements GenericMapper<User, DtoUser> {
         entity.setApellidos(dto.getApellidos());
         entity.setDni(dto.getDni());
         
-        if (dto.getEspecialidad_idEspecialidad() != null) {
+        if (dto.getEspecialidadIdEspecialidad() != null) {
             Especialidad especialidad = especialidadRepository
-                .findById(dto.getEspecialidad_idEspecialidad())
+                .findById(dto.getEspecialidadIdEspecialidad())
                 .orElse(null);
             entity.setEspecialidad(especialidad);
         }

@@ -104,12 +104,23 @@ public class UserController {
 
     @PostMapping("/CrearExperto")
     public ResponseEntity<DtoUser> createExperto(@RequestBody DtoUser dto) {
+        System.out.println("Datos recibidos en el backend:");
+        System.out.println("Username: " + dto.getUsername());
+        System.out.println("Password (sin hashear): " + dto.getPassword());
+        System.out.println("Nombre: " + dto.getNombre());
+        System.out.println("Role: " + dto.getRole());
+        System.out.println("Especialidad ID: " + dto.getEspecialidadIdEspecialidad());
+        
         if (dto.getIdUser() != null) {
             throw new UserBadRequestException("No se puede crear un experto con un ID ya existente");
         }
-        // Encriptar la contraseña antes de guardar
-        dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         
+        // Verificar que la contraseña no está vacía
+        if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
+            throw new UserBadRequestException("La contraseña no puede estar vacía");
+        }
+
+        // NO hashear aquí la contraseña, dejar que lo haga el servicio
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(userService.save(dto));
     }

@@ -31,16 +31,30 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, 
                                     HttpServletResponse response, 
                                     FilterChain filterChain) throws ServletException, IOException {
-        // Extrae el token del header Authorization
+        System.out.println("1. JwtFilter - Procesando request para: " + request.getRequestURI());
+        
         String token = extractToken(request);
-        // Valida el token y configura la autenticación
-        if (token != null && tokenProvider.isValidToken(token)) {
-            String username = tokenProvider.getUsernameFromToken(token);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken authentication = 
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (token != null) {
+            System.out.println("2. Token encontrado en request");
+            
+            if (tokenProvider.isValidToken(token)) {
+                String username = tokenProvider.getUsernameFromToken(token);
+                System.out.println("3. Token válido para usuario: " + username);
+                
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                System.out.println("4. Autoridades del usuario: " + userDetails.getAuthorities());
+                
+                UsernamePasswordAuthenticationToken authentication = 
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("5. Autenticación establecida en SecurityContext");
+            } else {
+                System.out.println("ERROR: Token inválido");
+            }
+        } else {
+            System.out.println("INFO: No se encontró token en la request");
         }
+        
         filterChain.doFilter(request, response);
     }
 

@@ -1,7 +1,13 @@
-// frontend/src/app/servicios/auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
+
+// Primero añadimos la interfaz para la respuesta
+interface AuthResponse {
+  token: string;
+  username: string;
+  role: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -43,27 +49,52 @@ export class AuthService {
   }
 
   iniciarSesion(nombreUsuario: string, contraseña: string): Observable<any> {
-    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    // Asegurarnos que los datos están formateados correctamente
+    const credentials = {
+        username: nombreUsuario.trim(), // Eliminar espacios en blanco
+        password: contraseña.trim()     // Eliminar espacios en blanco
+    };
     
-    return this.http.post(`${this.apiUrl}/login`, 
-      { 
-        username: nombreUsuario, 
-        password: contraseña 
-      },
-      { headers: headers }
-    ).pipe(
-      tap((respuesta: any) => {
-        this.usuario = { nombreUsuario: respuesta.username };
-        this.rol = respuesta.role;
-        this.token = respuesta.token;
-        this.estaLogueado = true;
-        this.guardarSesion();
-      }),
-      catchError((error) => {
-        return throwError(() => error);
-      })
-    );
-  }
+    console.log('Datos enviados al servidor:', {
+        username: credentials.username,
+        password: credentials.password
+    });
+
+    // Asegurarnos que estamos usando el Content-Type correcto
+    const httpOptions = {
+        headers: new HttpHeaders({
+            'Content-Type': 'application/json'
+        })
+    };
+    
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials, httpOptions)
+        .pipe(
+            tap((response: AuthResponse) => {
+                console.log('Respuesta del servidor:', response);
+                if (response && response.token) {
+                    this.token = response.token;
+                    this.rol = response.role;
+                    this.estaLogueado = true;
+                    this.usuario = {
+                        username: response.username,
+                        role: response.role
+                    };
+                    this.guardarSesion();
+                } else {
+                    throw new Error('No se recibió token del servidor');
+                }
+            }),
+            catchError(error => {
+                console.error('Error detallado:', {
+                    status: error.status,
+                    message: error.message,
+                    error: error.error
+                });
+                this.cerrarSesion();
+                return throwError(() => error);
+            })
+        );
+}
 
   cerrarSesion() {
     this.token = "";
@@ -81,5 +112,9 @@ export class AuthService {
 
   esAdmin(): boolean {
     return this.rol === 'ROLE_ADMIN';
+  }
+
+  esExperto(): boolean {
+    return this.rol === 'ROLE_EXPERTO';
   }
 }

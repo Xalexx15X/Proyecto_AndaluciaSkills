@@ -14,13 +14,19 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 @RestController // Indica que es un controlador REST
 @RequestMapping("/api/auth") // Ruta base para todos los endpoints de este controlador
 @RequiredArgsConstructor // Genera constructor con campos final automáticamente
 public class AuthController {
 
+    // Añade esta línea con las otras dependencias
+    private final PasswordEncoder passwordEncoder;
+    
     // Gestiona la autenticación de usuarios
     private final AuthenticationManager authenticationManager;
     // Genera y valida tokens JWT
@@ -31,13 +37,24 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody DtoUser loginDto) {
         try {
+            System.out.println("1. Contraseña recibida: " + loginDto.getPassword());
+                        
+            User user = userService.findByUsername(loginDto.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+                
+            System.out.println("2. Hash almacenado en BD: " + user.getPassword());
+            
+            // Verificar si coincide
+            boolean matches = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
+            System.out.println("3. ¿Coinciden las contraseñas?: " + matches);
+
+            System.out.println("4. Contraseña en texto plano enviada: '" + loginDto.getPassword() + "'");
+            
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
             );
             
             String token = jwtTokenProvider.generateToken(authentication);
-            User user = userService.findByUsername(loginDto.getUsername())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
                 
             return ResponseEntity.ok(new AuthResponseDTO(token, user.getUsername(), user.getRole()));
         } catch (AuthenticationException e) {

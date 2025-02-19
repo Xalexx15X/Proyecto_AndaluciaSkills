@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import * as bcrypt from 'bcryptjs';
+
 
 @Injectable({
   providedIn: 'root'
@@ -23,14 +25,21 @@ export class ExpertoService {
   }
 
   crearExperto(experto: any): Observable<any> {
-    // Asegurarse de que el ID de especialidad sea un número
-    if (experto.especialidad_idEspecialidad) {
-      experto.especialidad_idEspecialidad = Number(experto.especialidad_idEspecialidad);
-    }
+    // Crear una copia limpia del objeto experto con solo los campos necesarios
+    const expertoToSend = {
+        username: experto.username.trim(),
+        password: experto.password.trim(), // Aseguramos que la contraseña está en texto plano
+        nombre: experto.nombre.trim(),
+        apellidos: experto.apellidos.trim(),
+        dni: experto.dni.trim(),
+        role: 'ROLE_EXPERTO',
+        especialidad_id_especialidad: Number(experto.especialidad_id_especialidad)
+    };
     
     const headers = this.getAuthHeaders();
-    console.log('Datos a enviar:', experto); // Para depuración
-    return this.http.post<any>(`${this.apiUrl}/CrearExperto`, experto, { headers });
+    console.log('Datos a enviar al backend:', expertoToSend);
+    
+    return this.http.post<any>(`${this.apiUrl}/CrearExperto`, expertoToSend, { headers });
   }
 
   editarExperto(id: number, experto: any): Observable<any> {

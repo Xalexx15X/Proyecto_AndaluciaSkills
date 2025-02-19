@@ -24,6 +24,14 @@
             <a class="nav-link" routerLink="/ganadores">Visualizar Ganadores</a>
           </li>
         </ng-container>
+        <ng-container *ngIf="authService.esExperto()">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/participantes">Gestionar Participantes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/puntuaciones">Gestionar Puntuaciones</a>
+          </li>
+        </ng-container>
       </ul>
       
       <div class="d-flex">

@@ -26,9 +26,18 @@ public class UserService implements UserBaseService {
 
     @Override
     public DtoUser save(DtoUser dto) {
-        if (dto.getPassword() != null) {
-            dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+        // Verificar si ya existe un usuario con ese username
+        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new RuntimeException("El nombre de usuario ya existe");
         }
+
+        // Solo hashear si la contraseña no está ya hasheada
+        if (dto.getPassword() != null && !dto.getPassword().startsWith("$2a$")) {
+            System.out.println("Hasheando contraseña original: " + dto.getPassword());
+            dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+            System.out.println("Contraseña hasheada: " + dto.getPassword());
+        }
+
         User user = userMapper.toEntity(dto);
         User savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);
@@ -61,25 +70,35 @@ public class UserService implements UserBaseService {
         return userRepository.findByUsername(username);
     }
 
-    public User registerUser(UserRegisterDTO registerDTO) {
+    public User registerUser(UserRegisterDTO dto) {
         // Verificar si el usuario ya existe
-        if (userRepository.findByUsername(registerDTO.getUsername()).isPresent()) {
+        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
             throw new RuntimeException("El nombre de usuario ya existe");
         }
 
+        // Verifica que la contraseña no esté vacía
+        if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña no puede estar vacía");
+        }
+
+        // Log para debug
+        System.out.println("Contraseña a hashear: '" + dto.getPassword() + "'");
+        String hashedPassword = passwordEncoder.encode(dto.getPassword());
+        System.out.println("Hash generado: " + hashedPassword);
+
         // Buscar la especialidad
         Especialidad especialidad = especialidadRepository
-            .findById(registerDTO.getEspecialidadIdEspecialidad())
+            .findById(dto.getEspecialidadIdEspecialidad())
             .orElseThrow(() -> new RuntimeException("Especialidad no encontrada"));
 
         // Crear nuevo usuario
         User user = new User();
-        user.setUsername(registerDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
-        user.setNombre(registerDTO.getNombre());
-        user.setApellidos(registerDTO.getApellidos());
-        user.setDni(registerDTO.getDni());
-        user.setRole(registerDTO.getRole());
+        user.setUsername(dto.getUsername());
+        user.setPassword(hashedPassword);
+        user.setNombre(dto.getNombre());
+        user.setApellidos(dto.getApellidos());
+        user.setDni(dto.getDni());
+        user.setRole(dto.getRole());
         user.setEspecialidad(especialidad); // Aquí establecemos la relación correctamente
 
         return userRepository.save(user);

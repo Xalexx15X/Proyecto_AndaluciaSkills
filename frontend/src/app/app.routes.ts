@@ -8,6 +8,9 @@ import { CrearEspecialidadComponent } from './componentes/crear-especialidad/cre
 import { VisualizarGanadoresComponent } from './componentes/visualizar-ganadores/visualizar-ganadores.component';
 import { VerExpertoComponent } from './componentes/ver-experto/ver-experto.component';
 import { VerEspecialidadComponent } from './componentes/ver-especialidad/ver-especialidad.component';
+import { GestionarParticipantesComponent } from './componentes/gestionar-participantes/gestionar-participantes.component';
+import { CrearParticipanteComponent } from './componentes/crear-participantes/crear-participantes.component';
+import { VerParticipantesComponent } from './componentes/ver-participantes/ver-participantes.component';
 
 export const routes: Routes = [
   { path: '', component: ListaCompetidoresComponent },
@@ -21,6 +24,11 @@ export const routes: Routes = [
   { path: 'editar-experto/:id', component: CrearExpertoComponent },
   { path: 'ganadores', component: VisualizarGanadoresComponent },
   { path: 'ver-especialidad/:id', component: VerEspecialidadComponent },
-
+  // Nuevas rutas para participantes
+  { path: 'participantes', component: GestionarParticipantesComponent },
+  { path: 'crear-participante', component: CrearParticipanteComponent },
+  { path: 'ver-participante/:id', component: VerParticipantesComponent }, 
+  { path: 'editar-participante/:id', component: CrearParticipanteComponent },
+  
   { path: '**', redirectTo: '' }
 ];

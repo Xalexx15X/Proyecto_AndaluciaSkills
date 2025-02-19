@@ -23,27 +23,39 @@ export class LoginComponent {
   ) { }
 
   onSubmit() {
+    // Validaciones básicas
     if (!this.username || !this.password) {
-      this.error = 'Por favor, complete todos los campos';
-      return;
+        this.error = 'Por favor, complete todos los campos';
+        return;
     }
+
+    // Limpiar los datos antes de enviarlos
+    const username = this.username.trim();
+    const password = this.password.trim();
+
+    console.log('Intentando login con:', {
+        username: username,
+        password: password
+    });
 
     this.loading = true;
     this.error = '';
 
-    this.authService.iniciarSesion(this.username, this.password).subscribe({
-      next: (response) => {
-        console.log('Login exitoso:', response);
-        this.router.navigate(['/']);
-      },
-      error: (error) => {
-        console.error('Error en login:', error);
-        this.error = 'Error al iniciar sesión. Por favor, verifique sus credenciales.';
-        this.loading = false;
-      },
-      complete: () => {
-        this.loading = false;
-      }
+    this.authService.iniciarSesion(username, password).subscribe({
+        next: (response) => {
+            console.log('Login exitoso:', response);
+            this.loading = false;
+            this.router.navigate(['/']);
+        },
+        error: (error) => {
+            console.error('Error en login:', error);
+            this.loading = false;
+            if (error.status === 401) {
+                this.error = 'Usuario o contraseña incorrectos';
+            } else {
+                this.error = 'Error al conectar con el servidor';
+            }
+        }
     });
   }
 }

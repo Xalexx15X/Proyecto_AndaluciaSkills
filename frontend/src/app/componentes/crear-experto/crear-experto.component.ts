@@ -57,42 +57,56 @@ export class CrearExpertoComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log('Especialidad ID antes de convertir:', this.experto.especialidad_id_especialidad);
-    
-    if (this.experto.especialidad_id_especialidad) {
-        this.experto.especialidad_id_especialidad = Number(this.experto.especialidad_id_especialidad);
-        console.log('Especialidad ID después de convertir:', this.experto.especialidad_id_especialidad);
-    }
-    
-    const especialidadSeleccionada = this.especialidades.find(
-        esp => esp.idEspecialidad === this.experto.especialidad_id_especialidad
-    );
-    
-    console.log('Especialidad seleccionada:', especialidadSeleccionada);
-    
-    if (especialidadSeleccionada) {
-        this.experto.nombreEspecialidad = especialidadSeleccionada.nombre;
+    if (!this.validarFormulario()) {
+        console.error('Formulario inválido');
+        return;
     }
 
-    // Log del objeto completo antes de enviarlo
-    console.log('Objeto experto a enviar:', this.experto);
+    // Asegurarse de que los datos estén limpios
+    const expertoData = {
+        ...this.experto,
+        username: this.experto.username.trim(),
+        password: this.experto.password.trim(),
+        nombre: this.experto.nombre.trim(),
+        apellidos: this.experto.apellidos.trim(),
+        dni: this.experto.dni.trim(),
+        role: 'ROLE_EXPERTO',
+        especialidad_id_especialidad: Number(this.experto.especialidad_id_especialidad)
+    };
+
+    console.log('Datos del experto antes de enviar:', expertoData);
 
     if (this.isEditing) {
-      this.expertoService.editarExperto(this.experto.idUser, this.experto).subscribe(
-        response => {
-          console.log('Respuesta del servidor:', response);
-          this.router.navigate(['/expertos']);
-        },
-        error => console.error('Error al editar:', error)
-      );
+        this.expertoService.editarExperto(this.experto.idUser, expertoData).subscribe({
+            next: (response) => {
+                console.log('Experto editado correctamente:', response);
+                this.router.navigate(['/expertos']);
+            },
+            error: (error) => {
+                console.error('Error al editar experto:', error);
+            }
+        });
     } else {
-      this.expertoService.crearExperto(this.experto).subscribe(
-        response => {
-          console.log('Respuesta del servidor:', response);
-          this.router.navigate(['/expertos']);
-        },
-        error => console.error('Error al crear:', error)
-      );
+        this.expertoService.crearExperto(expertoData).subscribe({
+            next: (response) => {
+                console.log('Experto creado correctamente:', response);
+                this.router.navigate(['/expertos']);
+            },
+            error: (error) => {
+                console.error('Error al crear experto:', error);
+                // Aquí podrías añadir manejo de errores específicos
+            }
+        });
     }
+}
+
+  private validarFormulario(): boolean {
+      if (!this.experto.username || !this.experto.password || 
+          !this.experto.nombre || !this.experto.apellidos || 
+          !this.experto.dni || !this.experto.especialidad_id_especialidad) {
+          console.error('Todos los campos son obligatorios');
+          return false;
+      }
+      return true;
   }
 }

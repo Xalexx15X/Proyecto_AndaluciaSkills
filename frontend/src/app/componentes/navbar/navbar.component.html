@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg custom-navbar animate__animated animate__fadeIn">
   <div class="container">
     <a class="navbar-brand" routerLink="/">
-      <img src="../../../assets/imagenes/Logo.png" alt="Logo" height="40">
+      <img src="logo.png" alt="Logo" height="40" class="d-inline-block align-top">
     </a>
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -15,34 +15,43 @@
         </li>
         <ng-container *ngIf="authService.esAdmin()">
           <li class="nav-item">
-            <a class="nav-link" routerLink="/especialidades">Gestionar Especialidades</a>
+            <a class="nav-link" routerLink="admin/especialidades">Gestionar Especialidades</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/expertos">Gestionar Expertos</a>
+            <a class="nav-link" routerLink="admin/expertos">Gestionar Expertos</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/ganadores">Visualizar Ganadores</a>
+            <a class="nav-link" routerLink="admin/ganadores">Visualizar Ganadores</a>
           </li>
         </ng-container>
         <ng-container *ngIf="authService.esExperto()">
           <li class="nav-item">
-            <a class="nav-link" routerLink="/participantes">Gestionar Participantes</a>
+            <a class="nav-link" routerLink="experto/participantes">Gestionar Participantes</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/puntuaciones">Gestionar Puntuaciones</a>
+            <a class="nav-link" routerLink="experto/puntuaciones">Gestionar Puntuaciones</a>
           </li>
         </ng-container>
       </ul>
       
-      <div class="d-flex">
+      <div class="d-flex align-items-center">
         <ng-container *ngIf="authService.estaLogueado; else botonLogin">
-          <span class="nav-text me-3">{{authService.usuario.username}}</span>
-          <button class="btn btn-outline-danger custom-btn-logout" (click)="cerrarSesion()">
-            Cerrar Sesión
-          </button>
+          <div class="user-profile">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info">
+              <span class="username">{{authService.usuario.username}}</span>
+              <span class="role">{{authService.usuario.role === 'ROLE_ADMIN' ? 'Administrador' : 'Experto'}}</span>
+            </div>
+            <button class="btn custom-btn-logout" (click)="cerrarSesion()">
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
+          </div>
         </ng-container>
         <ng-template #botonLogin>
           <a class="btn custom-btn-login" routerLink="/login">
+            <i class="fas fa-sign-in-alt me-2"></i>
             Iniciar Sesión
           </a>
         </ng-template>

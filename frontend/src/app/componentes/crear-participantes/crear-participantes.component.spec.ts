@@ -2,18 +2,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CrearParticipanteComponent } from './crear-participantes.component';
+import { CrearParticipantesComponent } from './crear-participantes.component';
 import { ParticipantesService } from '../../servicios/participantes.service';
 import { CommonModule } from '@angular/common';
 
 describe('CrearParticipantesComponent', () => {
-  let component: CrearParticipanteComponent;
-  let fixture: ComponentFixture<CrearParticipanteComponent>;
+  let component: CrearParticipantesComponent;
+  let fixture: ComponentFixture<CrearParticipantesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        CrearParticipanteComponent,
+        CrearParticipantesComponent,
         HttpClientTestingModule,
         RouterTestingModule,
         FormsModule,
@@ -26,7 +26,7 @@ describe('CrearParticipantesComponent', () => {
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CrearParticipanteComponent);
+    fixture = TestBed.createComponent(CrearParticipantesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -25,34 +25,97 @@
 }
 
 .custom-btn-login {
-  background: white;
-  color: #000DFF;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
   border: none;
-  padding: 0.5rem 1.5rem;
+  padding: 8px 20px;
+  border-radius: 50px;
   font-weight: 500;
   transition: all 0.3s ease;
 }
 
 .custom-btn-login:hover {
+  background: white;
+  color: #000DFF;
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .custom-btn-logout {
-  background: transparent;
-  color: white;
-  border: 2px solid white;
-  padding: 0.5rem 1.5rem;
-  font-weight: 500;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
   transition: all 0.3s ease;
 }
 
 .custom-btn-logout:hover {
-  background: white;
-  color: #000DFF;
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(360deg);
+}
+
+.custom-btn-logout i {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: bold;
 }
 
 .nav-text {
   color: white;
   font-weight: 500;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 15px;
+  border-radius: 50px;
+  margin-right: 10px;
+  transition: all 0.3s ease;
+}
+
+.user-profile:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.user-avatar {
+  width: 35px;
+  height: 35px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.user-avatar i {
+  color: white;
+  font-size: 1.2rem;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  margin-right: 15px;
+}
+
+.username {
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.role {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.75rem;
+  text-transform: uppercase;
 }

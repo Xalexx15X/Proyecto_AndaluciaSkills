@@ -9,26 +9,37 @@ import { VisualizarGanadoresComponent } from './componentes/visualizar-ganadores
 import { VerExpertoComponent } from './componentes/ver-experto/ver-experto.component';
 import { VerEspecialidadComponent } from './componentes/ver-especialidad/ver-especialidad.component';
 import { GestionarParticipantesComponent } from './componentes/gestionar-participantes/gestionar-participantes.component';
-import { CrearParticipanteComponent } from './componentes/crear-participantes/crear-participantes.component';
+import { CrearParticipantesComponent } from './componentes/crear-participantes/crear-participantes.component';
 import { VerParticipantesComponent } from './componentes/ver-participantes/ver-participantes.component';
+import { GestionarPuntuacionesComponent } from './componentes/gestionar-puntuaciones/gestionar-puntuaciones.component';
 
 export const routes: Routes = [
+  // Rutas públicas
   { path: '', component: ListaCompetidoresComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'especialidades', component: GestionarEspecialidadesComponent },
-  { path: 'crear-especialidad', component: CrearEspecialidadComponent },
-  { path: 'editar-especialidad/:id', component: CrearEspecialidadComponent },
-  { path: 'expertos', component: GestionarExpertosComponent },
-  { path: 'crear-experto', component: CrearExpertoComponent },
-  { path: 'ver-experto/:id', component: VerExpertoComponent },
-  { path: 'editar-experto/:id', component: CrearExpertoComponent },
-  { path: 'ganadores', component: VisualizarGanadoresComponent },
-  { path: 'ver-especialidad/:id', component: VerEspecialidadComponent },
-  // Nuevas rutas para participantes
-  { path: 'participantes', component: GestionarParticipantesComponent },
-  { path: 'crear-participante', component: CrearParticipanteComponent },
-  { path: 'ver-participante/:id', component: VerParticipantesComponent }, 
-  { path: 'editar-participante/:id', component: CrearParticipanteComponent },
-  
+
+  // Rutas de administrador
+  { path: 'admin', children: [
+    { path: 'especialidades', component: GestionarEspecialidadesComponent },
+    { path: 'crear-especialidad', component: CrearEspecialidadComponent },
+    { path: 'editar-especialidad/:id', component: CrearEspecialidadComponent },
+    { path: 'expertos', component: GestionarExpertosComponent },
+    { path: 'crear-experto', component: CrearExpertoComponent },
+    { path: 'ver-experto/:id', component: VerExpertoComponent },
+    { path: 'editar-experto/:id', component: CrearExpertoComponent },
+    { path: 'ganadores', component: VisualizarGanadoresComponent },
+    { path: 'ver-especialidad/:id', component: VerEspecialidadComponent },
+    { path: 'participantes', component: GestionarParticipantesComponent },
+    { path: 'crear-participante', component: CrearParticipantesComponent },
+    { path: 'ver-participante/:id', component: VerParticipantesComponent },
+    { path: 'editar-participante/:id', component: CrearParticipantesComponent }
+  ]},
+
+  // Rutas de experto
+  { path: 'experto', children: [
+    { path: 'participantes', component: GestionarParticipantesComponent },
+    { path: 'puntuaciones', component: GestionarPuntuacionesComponent }
+  ]},
+
   { path: '**', redirectTo: '' }
 ];

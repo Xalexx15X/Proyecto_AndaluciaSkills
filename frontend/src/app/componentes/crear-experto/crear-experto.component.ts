@@ -80,7 +80,7 @@ export class CrearExpertoComponent implements OnInit {
         this.expertoService.editarExperto(this.experto.idUser, expertoData).subscribe({
             next: (response) => {
                 console.log('Experto editado correctamente:', response);
-                this.router.navigate(['/expertos']);
+                this.router.navigate(['admin/expertos']);
             },
             error: (error) => {
                 console.error('Error al editar experto:', error);
@@ -90,7 +90,7 @@ export class CrearExpertoComponent implements OnInit {
         this.expertoService.crearExperto(expertoData).subscribe({
             next: (response) => {
                 console.log('Experto creado correctamente:', response);
-                this.router.navigate(['/expertos']);
+                this.router.navigate(['admin/expertos']);
             },
             error: (error) => {
                 console.error('Error al crear experto:', error);

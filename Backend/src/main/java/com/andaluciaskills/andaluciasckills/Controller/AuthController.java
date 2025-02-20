@@ -56,10 +56,10 @@ public class AuthController {
             
             String token = jwtTokenProvider.generateToken(authentication);
                 
-            return ResponseEntity.ok(new AuthResponseDTO(token, user.getUsername(), user.getRole()));
+            return ResponseEntity.ok(new AuthResponseDTO(token, user.getUsername(), user.getRole(), user.getEspecialidadId()));
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new AuthResponseDTO(null, null, null));
+                .body(new AuthResponseDTO(null, null, null,null));
         }
     }
 

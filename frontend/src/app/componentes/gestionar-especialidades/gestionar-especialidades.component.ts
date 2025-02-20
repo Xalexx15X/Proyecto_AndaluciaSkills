@@ -31,11 +31,11 @@ export class GestionarEspecialidadesComponent implements OnInit {
   }
 
   verEspecialidad(id: number): void {
-    this.router.navigate(['/ver-especialidad', id]);
+    this.router.navigate(['/admin/ver-especialidad', id]);
   }
 
   editarEspecialidad(id: number): void {
-    this.router.navigate(['/editar-especialidad', id]);
+    this.router.navigate(['/admin/editar-especialidad', id]);
   }
 
   borrarEspecialidad(id: number): void {

@@ -1,44 +1,44 @@
 <div class="container mt-4">
-    <h2 class="text-center mb-4">Gestión de Expertos</h2>
-    <div class="d-flex justify-content-end mb-3">
-      <button class="btn btn-primary" [routerLink]="['/crear-experto']">Crear Experto</button>
-    </div>
-    <div class="table-responsive">
-      <table class="table custom-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Usuario</th>
-            <th>Nombre</th>
-            <th>Apellidos</th>
-            <th>DNI</th>
-            <th>Especialidad</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let experto of expertos">
-            <td>{{ experto.idUser }}</td>
-            <td>{{ experto.username }}</td>
-            <td>{{ experto.nombre }}</td>
-            <td>{{ experto.apellidos }}</td>
-            <td>{{ experto.dni }}</td>
-            <td>{{ experto.nombreEspecialidad }}</td>
-            <td>
-              <div class="btn-group">
-                <button class="btn btn-info btn-sm me-2" (click)="verExperto(experto.idUser)">
-                  <i class="fas fa-eye"></i> Ver
-                </button>
-                <button class="btn btn-warning btn-sm me-2" (click)="editarExperto(experto.idUser)">
-                  <i class="fas fa-edit"></i> Editar
-                </button>
-                <button class="btn btn-danger btn-sm" (click)="borrarExperto(experto.idUser)">
-                  <i class="fas fa-trash"></i> Borrar
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <h2 class="text-center mb-4">Gestión de Expertos</h2>
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-primary" routerLink="/admin/crear-experto">Crear Experto</button>
+  </div>
+  <div class="table-responsive">
+    <table class="table custom-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuario</th>
+          <th>Nombre</th>
+          <th>Apellidos</th>
+          <th>DNI</th>
+          <th>Especialidad</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let experto of expertos">
+          <td>{{ experto.idUser }}</td>
+          <td>{{ experto.username }}</td>
+          <td>{{ experto.nombre }}</td>
+          <td>{{ experto.apellidos }}</td>
+          <td>{{ experto.dni }}</td>
+          <td>{{ experto.nombreEspecialidad }}</td>
+          <td>
+            <div class="btn-group">
+              <button class="btn btn-info btn-sm me-2" (click)="verExperto(experto.idUser)">
+                <i class="fas fa-eye"></i> Ver
+              </button>
+              <button class="btn btn-warning btn-sm me-2" (click)="editarExperto(experto.idUser)">
+                <i class="fas fa-edit"></i> Editar
+              </button>
+              <button class="btn btn-danger btn-sm" (click)="borrarExperto(experto.idUser)">
+                <i class="fas fa-trash"></i> Borrar
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

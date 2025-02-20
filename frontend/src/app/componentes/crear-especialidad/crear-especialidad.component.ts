@@ -39,7 +39,7 @@ export class CrearEspecialidadComponent implements OnInit {
       this.especialidadService.editarEspecialidad(this.especialidad.idEspecialidad, this.especialidad).subscribe(
         response => {
           console.log('Respuesta del servidor:', response);
-          this.router.navigate(['/especialidades']);
+          this.router.navigate(['admin/especialidades']);
         },
         error => console.error('Error al editar:', error)
       );
@@ -47,7 +47,7 @@ export class CrearEspecialidadComponent implements OnInit {
       this.especialidadService.crearEspecialidad(this.especialidad).subscribe(
         response => {
           console.log('Respuesta del servidor:', response);
-          this.router.navigate(['/especialidades']);
+          this.router.navigate(['admin/especialidades']);
         },
         error => console.error('Error al crear:', error)
       );

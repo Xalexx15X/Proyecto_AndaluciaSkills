@@ -7,6 +7,7 @@ import com.andaluciaskills.andaluciasckills.Repository.ParticipanteRepository;
 import com.andaluciaskills.andaluciasckills.Service.base.ParticipanteBaseService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +17,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ParticipanteService implements ParticipanteBaseService {
-    private final ParticipanteRepository participanteRepository;
-    private final ParticipanteMapper participanteMapper;
+    @Autowired
+    private ParticipanteRepository participanteRepository;
+    @Autowired
+    private ParticipanteMapper participanteMapper;
 
     @Override
     public List<DtoParticipante> findAll() {
@@ -49,5 +52,10 @@ public class ParticipanteService implements ParticipanteBaseService {
     @Override
     public void delete(Integer id) {
         participanteRepository.deleteById(id);
+    }
+
+    public List<DtoParticipante> findByEspecialidad(Integer especialidadId) {
+        List<Participante> participantes = participanteRepository.findByEspecialidadIdEspecialidad(especialidadId);
+        return participanteMapper.toDtoList(participantes);
     }
 }

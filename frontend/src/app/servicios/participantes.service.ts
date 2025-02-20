@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -17,9 +18,16 @@ export class ParticipantesService {
   }
 
   getParticipante(id: number): Observable<any> {
+    console.log(`Solicitando participante con ID: ${id}`);
     return this.http.get<any>(`${this.apiUrl}/BuscarParticipante/${id}`, {
-      headers: this.getAuthHeaders()
-    });
+        headers: this.getAuthHeaders()
+    }).pipe(
+        tap(data => console.log('Datos recibidos:', data)),
+        catchError(error => {
+            console.error('Error al obtener participante:', error);
+            return throwError(() => error);
+        })
+    );
   }
 
   crearParticipante(participante: any): Observable<any> {
@@ -34,13 +42,28 @@ export class ParticipantesService {
   }
 
   editarParticipante(id: number, participante: any): Observable<any> {
-    if (participante.especialidad_id_especialidad) {
-      participante.especialidad_id_especialidad = Number(participante.especialidad_id_especialidad);
-    }
+    // Asegurarse de que el objeto a enviar tiene el ID correcto
+    const participanteToUpdate = {
+        idParticipante: id,  // Añadir explícitamente el ID
+        nombre: participante.nombre,
+        apellidos: participante.apellidos,
+        centro: participante.centro,
+        especialidad_id_especialidad: Number(participante.especialidad_id_especialidad)
+    };
 
-    const headers = this.getAuthHeaders();
-    console.log('Datos a enviar:', participante); // Para depuración
-    return this.http.put<any>(`${this.apiUrl}/ModificarParticipante/${id}`, participante, { headers });
+    console.log('Datos a enviar en edición:', participanteToUpdate);
+    
+    return this.http.put<any>(
+        `${this.apiUrl}/ModificarParticipante/${id}`, 
+        participanteToUpdate, 
+        { headers: this.getAuthHeaders() }
+    ).pipe(
+        tap(response => console.log('Respuesta del servidor:', response)),
+        catchError(error => {
+            console.error('Error en la petición:', error);
+            return throwError(() => error);
+        })
+    );
   }
 
   borrarParticipante(id: number): Observable<any> {

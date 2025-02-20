@@ -6,6 +6,7 @@ import com.andaluciaskills.andaluciasckills.Error.ParticipanteNotFoundException;
 import com.andaluciaskills.andaluciasckills.Error.SearchParticipanteNoResultException;
 import com.andaluciaskills.andaluciasckills.Service.ParticipanteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +15,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/participantes")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class ParticipanteController {
-    private final ParticipanteService participanteService;
+    @Autowired
+    private ParticipanteService participanteService;
 
     @GetMapping
     public ResponseEntity<List<DtoParticipante>> getAllParticipantes() {
@@ -27,8 +30,9 @@ public class ParticipanteController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/BuscasParticipante/{id}")
+    @GetMapping("/BuscarParticipante/{id}")
     public ResponseEntity<DtoParticipante> getParticipante(@PathVariable Integer id) {
+        System.out.println("Buscando participante con ID: " + id);
         return ResponseEntity.ok(
             participanteService.findById(id)
                 .orElseThrow(() -> new ParticipanteNotFoundException())
@@ -44,23 +48,24 @@ public class ParticipanteController {
             .body(participanteService.save(dto));
     }
 
-    @PutMapping("ModificarParticipante/{id}")
+    @PutMapping("/ModificarParticipante/{id}")
     public ResponseEntity<DtoParticipante> updateParticipante(
             @PathVariable Integer id,
             @RequestBody DtoParticipante dto) {
+    
+        System.out.println("ID de la ruta: " + id);
+        System.out.println("DTO recibido: " + dto);
 
-        if (!id.equals(dto.getIdParticipante())) {
+        // Asegurarse de que el ID del DTO coincida con el de la ruta
+        if (dto.getIdParticipante() != null && !dto.getIdParticipante().equals(id)) {
             throw new ParticipanteBadRequestException("El ID de la ruta no coincide con el ID del objeto");
         }
 
-        return ResponseEntity.ok(
-            participanteService.findById(id)
-                .map(e -> {
-                    dto.setIdParticipante(id);
-                    return participanteService.save(dto);
-                })
-                .orElseThrow(() -> new ParticipanteNotFoundException(id))
-        );
+        // Establecer el ID del path en el DTO
+        dto.setIdParticipante(id);
+
+        DtoParticipante updated = participanteService.update(dto);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("BorrarParticipante/{id}")
@@ -69,5 +74,14 @@ public class ParticipanteController {
             .orElseThrow(() -> new ParticipanteNotFoundException(id));
         participanteService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/porEspecialidad/{especialidadId}")
+    public ResponseEntity<List<DtoParticipante>> getParticipantesByEspecialidad(@PathVariable Integer especialidadId) {
+        List<DtoParticipante> participantes = participanteService.findByEspecialidad(especialidadId);
+        if (participantes.isEmpty()) {
+            throw new SearchParticipanteNoResultException();
+        }
+        return ResponseEntity.ok(participantes);
     }
 }

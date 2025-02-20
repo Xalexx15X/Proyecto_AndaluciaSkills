@@ -1,0 +1,35 @@
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Gestión de Puntuaciones</h2>
+
+  <div class="table-responsive">
+    <table class="table custom-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellidos</th>
+          <th>Centro</th>
+          <th>Especialidad</th>
+          <th>Puntuación</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let participante of participantes">
+          <td>{{ participante.idParticipante }}</td>
+          <td>{{ participante.nombre }}</td>
+          <td>{{ participante.apellidos }}</td>
+          <td>{{ participante.centro }}</td>
+          <td>{{ participante.nombreEspecialidad }}</td>
+          <td>{{ participante.puntuacion || 'Sin puntuar' }}</td>
+          <td>
+            <button class="btn btn-primary btn-sm" (click)="puntuar(participante.idParticipante)">
+              <i class="fas fa-star me-1"></i>
+              Puntuar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

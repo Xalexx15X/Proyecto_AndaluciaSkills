@@ -25,8 +25,13 @@ public class User implements UserDetails {
     private String dni;
 
     @ManyToOne 
-    @JoinColumn(name = "Especialidad_idEspecialidad")
+    @JoinColumn(name = "especialidad_id_especialidad")
     private Especialidad especialidad;
+
+    // Método para obtener el ID de especialidad de manera segura
+    public Integer getEspecialidadId() {
+        return especialidad != null ? especialidad.getIdEspecialidad() : null;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

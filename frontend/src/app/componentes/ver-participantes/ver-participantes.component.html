@@ -1,33 +1,61 @@
 <div class="container mt-4">
-    <div class="card">
-      <div class="card-header">
-        <h2>Detalles del Participante</h2>
-      </div>
-      <div class="card-body" *ngIf="participante">
-        <div class="row mb-3">
-          <div class="col-md-3"><strong>ID:</strong></div>
-          <div class="col-md-9">{{ participante.idParticipante }}</div>
+    <div class="card custom-card">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Detalles del Participante</h2>
         </div>
-        <div class="row mb-3">
-          <div class="col-md-3"><strong>Nombre:</strong></div>
-          <div class="col-md-9">{{ participante.nombre }}</div>
+        
+        <ng-container *ngIf="!loading; else loadingTemplate">
+            <ng-container *ngIf="!error; else errorTemplate">
+                <div class="card-body" *ngIf="participante">
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>ID:</strong></div>
+                        <div class="col-md-9">{{ participante.idParticipante }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Nombre:</strong></div>
+                        <div class="col-md-9">{{ participante.nombre }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Apellidos:</strong></div>
+                        <div class="col-md-9">{{ participante.apellidos }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Centro:</strong></div>
+                        <div class="col-md-9">{{ participante.centro }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Especialidad:</strong></div>
+                        <div class="col-md-9">{{ participante.nombreEspecialidad }}</div>
+                    </div>
+                </div>
+            </ng-container>
+        </ng-container>
+
+        <ng-template #loadingTemplate>
+            <div class="card-body text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+            </div>
+        </ng-template>
+
+        <ng-template #errorTemplate>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            </div>
+        </ng-template>
+
+        <div class="card-footer d-flex justify-content-between">
+            <button class="btn btn-secondary" routerLink="/participantes">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+            <button class="btn btn-primary" 
+                    *ngIf="participante"
+                    [routerLink]="['/editar-participante', participante.idParticipante]">
+                <i class="fas fa-edit"></i> Editar
+            </button>
         </div>
-        <div class="row mb-3">
-          <div class="col-md-3"><strong>Apellidos:</strong></div>
-          <div class="col-md-9">{{ participante.apellidos }}</div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-md-3"><strong>Centro:</strong></div>
-          <div class="col-md-9">{{ participante.centro }}</div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-md-3"><strong>Especialidad:</strong></div>
-          <div class="col-md-9">{{ participante.nombreEspecialidad }}</div>
-        </div>
-      </div>
-      <div class="card-footer">
-        <button class="btn btn-primary me-2" routerLink="/participantes">Volver</button>
-        <button class="btn btn-secondary" [routerLink]="['/editar-participante', participante?.idParticipante]">Editar</button>
-      </div>
     </div>
 </div>

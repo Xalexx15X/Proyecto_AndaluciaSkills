@@ -35,11 +35,11 @@ export class GestionarParticipantesComponent implements OnInit {
   }
 
   verParticipante(id: number): void {
-    this.router.navigate(['/ver-participante', id]);
+    this.router.navigate(['/admin/ver-participante', id]);
   }
 
   editarParticipante(id: number): void {
-    this.router.navigate(['/editar-participante', id]);
+    this.router.navigate(['/admin/editar-participante', id]);
   }
 
   borrarParticipante(id: number): void {

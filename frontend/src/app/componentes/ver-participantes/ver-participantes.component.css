@@ -1,0 +1,31 @@
+.custom-card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 10px;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+    border-radius: 10px 10px 0 0;
+}
+
+.card-header h2 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.row {
+    align-items: center;
+}
+
+.col-md-3 strong {
+    color: #2d3436;
+}

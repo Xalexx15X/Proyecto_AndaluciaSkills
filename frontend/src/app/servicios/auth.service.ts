@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, Observable, Subject, tap, throwError } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
 
-// Primero añadimos la interfaz para la respuesta
 interface AuthResponse {
   token: string;
   username: string;
   role: string;
+  especialidadId: number;
 }
 
 @Injectable({
@@ -18,22 +19,30 @@ export class AuthService {
   rol: string;
   estaLogueado: boolean;
   usuario: any;
+  especialidadId: number | null;
+  authStateChanged = new Subject<boolean>();
 
   constructor(private http: HttpClient) {
     this.token = "";
     this.rol = "";
     this.estaLogueado = false;
     this.usuario = {};
+    this.especialidadId = null;
     this.recuperarSesion();
   }
 
-  public guardarSesion() {
+  public guardarSesion(response: any) {
     const datos = {
-      token: this.token,
-      rol: this.rol,
-      estaLogueado: this.estaLogueado,
-      usuario: this.usuario
+      token: response.token,
+      rol: response.role,
+      estaLogueado: true,
+      usuario: {
+        username: response.username,
+        role: response.role
+      },
+      especialidadId: response.especialidadId
     }
+    console.log('Guardando datos en localStorage:', datos);
     localStorage.setItem("DATOS_AUTH", JSON.stringify(datos));
   }
 
@@ -45,62 +54,40 @@ export class AuthService {
       this.rol = datosParsed.rol;
       this.estaLogueado = datosParsed.estaLogueado;
       this.usuario = datosParsed.usuario;
+      this.especialidadId = datosParsed.especialidadId;
     }
   }
 
   iniciarSesion(nombreUsuario: string, contraseña: string): Observable<any> {
-    // Asegurarnos que los datos están formateados correctamente
     const credentials = {
-        username: nombreUsuario.trim(), // Eliminar espacios en blanco
-        password: contraseña.trim()     // Eliminar espacios en blanco
+      username: nombreUsuario.trim(),
+      password: contraseña.trim()
     };
-    
-    console.log('Datos enviados al servidor:', {
-        username: credentials.username,
-        password: credentials.password
-    });
 
-    // Asegurarnos que estamos usando el Content-Type correcto
-    const httpOptions = {
-        headers: new HttpHeaders({
-            'Content-Type': 'application/json'
+    return this.http.post<any>(`${this.apiUrl}/login`, credentials)
+      .pipe(
+        tap(response => {
+          if (response && response.token) {
+            this.token = response.token;
+            this.rol = response.role;
+            this.estaLogueado = true;
+            this.usuario = {
+              username: response.username,
+              role: response.role
+            };
+            this.guardarSesion(response);
+            this.authStateChanged.next(true); // Notificar el cambio
+          }
         })
-    };
-    
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials, httpOptions)
-        .pipe(
-            tap((response: AuthResponse) => {
-                console.log('Respuesta del servidor:', response);
-                if (response && response.token) {
-                    this.token = response.token;
-                    this.rol = response.role;
-                    this.estaLogueado = true;
-                    this.usuario = {
-                        username: response.username,
-                        role: response.role
-                    };
-                    this.guardarSesion();
-                } else {
-                    throw new Error('No se recibió token del servidor');
-                }
-            }),
-            catchError(error => {
-                console.error('Error detallado:', {
-                    status: error.status,
-                    message: error.message,
-                    error: error.error
-                });
-                this.cerrarSesion();
-                return throwError(() => error);
-            })
-        );
-}
+      );
+  }
 
   cerrarSesion() {
     this.token = "";
     this.rol = "";
     this.estaLogueado = false;
     this.usuario = {};
+    this.especialidadId = null;
     localStorage.removeItem("DATOS_AUTH");
   }
 
@@ -116,5 +103,22 @@ export class AuthService {
 
   esExperto(): boolean {
     return this.rol === 'ROLE_EXPERTO';
+  }
+
+  getToken(): string {
+    return this.token;
+  }
+
+  getEspecialidadFromToken(): number | null {
+    const datosAuth = localStorage.getItem('DATOS_AUTH');
+    if (datosAuth) {
+      const datos = JSON.parse(datosAuth);
+      if (datos.especialidadId) {
+        console.log('Especialidad ID encontrada:', datos.especialidadId);
+        return datos.especialidadId;
+      }
+    }
+    console.log('No se encontró especialidad ID en localStorage');
+    return null;
   }
 }

@@ -31,11 +31,11 @@ export class GestionarExpertosComponent implements OnInit {
   }
 
   verExperto(id: number): void {
-    this.router.navigate(['/ver-experto', id]);
+    this.router.navigate(['/admin/ver-experto', id]);
   }
 
   editarExperto(id: number): void {
-    this.router.navigate(['/editar-experto', id]);
+    this.router.navigate(['/admin/editar-experto', id]);
   }
 
   borrarExperto(id: number): void {

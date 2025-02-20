@@ -1,48 +1,126 @@
 <div class="container mt-4">
-    <h2 class="text-center mb-4">{{isEditing ? 'Editar' : 'Crear'}} Experto</h2>
-    <form (ngSubmit)="onSubmit()" #expertoForm="ngForm">
-      <div class="form-group mb-3">
-        <label for="username" class="form-label">Nombre de Usuario</label>
-        <input type="text" [(ngModel)]="experto.username" name="username" class="form-control" required>
+  <h2 class="text-center mb-4">{{isEditing ? 'Editar' : 'Crear'}} Experto</h2>
+  <form #expertoForm="ngForm" (ngSubmit)="onSubmit()" class="needs-validation">
+    <div class="mb-3">
+      <label for="username" class="form-label">Nombre de Usuario *</label>
+      <input 
+        type="text" 
+        class="form-control"
+        id="username"
+        name="username"
+        [(ngModel)]="experto.username"
+        #username="ngModel"
+        required
+        minlength="4"
+        [ngClass]="{'is-invalid': username.invalid && (username.dirty || username.touched)}"
+      >
+      <div class="invalid-feedback" *ngIf="username.invalid && (username.dirty || username.touched)">
+        <div *ngIf="username.errors?.['required']">El nombre de usuario es obligatorio</div>
+        <div *ngIf="username.errors?.['minlength']">El nombre de usuario debe tener al menos 4 caracteres</div>
       </div>
-      
-      <div class="form-group mb-3" *ngIf="!isEditing">
-        <label for="password" class="form-label">Contraseña</label>
-        <input type="password" [(ngModel)]="experto.password" name="password" class="form-control" required>
+    </div>
+
+    <div class="mb-3" *ngIf="!isEditing">
+      <label for="password" class="form-label">Contraseña *</label>
+      <input 
+        type="password" 
+        class="form-control"
+        id="password"
+        name="password"
+        [(ngModel)]="experto.password"
+        #password="ngModel"
+        required
+        minlength="6"
+        [ngClass]="{'is-invalid': password.invalid && (password.dirty || password.touched)}"
+      >
+      <div class="invalid-feedback" *ngIf="password.invalid && (password.dirty || password.touched)">
+        <div *ngIf="password.errors?.['required']">La contraseña es obligatoria</div>
+        <div *ngIf="password.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres</div>
       </div>
-  
-      <div class="form-group mb-3">
-        <label for="nombre" class="form-label">Nombre</label>
-        <input type="text" [(ngModel)]="experto.nombre" name="nombre" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="dni" class="form-label">DNI *</label>
+      <input 
+        type="text" 
+        class="form-control"
+        id="dni"
+        name="dni"
+        [(ngModel)]="experto.dni"
+        #dni="ngModel"
+        required
+        pattern="^[0-9]{8}[A-Za-z]$"
+        [ngClass]="{'is-invalid': dni.invalid && (dni.dirty || dni.touched)}"
+      >
+      <div class="invalid-feedback" *ngIf="dni.invalid && (dni.dirty || dni.touched)">
+        <div *ngIf="dni.errors?.['required']">El DNI es obligatorio</div>
+        <div *ngIf="dni.errors?.['pattern']">El DNI debe tener 8 números seguidos de una letra</div>
       </div>
-  
-      <div class="form-group mb-3">
-        <label for="apellidos" class="form-label">Apellidos</label>
-        <input type="text" [(ngModel)]="experto.apellidos" name="apellidos" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="nombre" class="form-label">Nombre *</label>
+      <input 
+        type="text" 
+        class="form-control"
+        id="nombre"
+        name="nombre"
+        [(ngModel)]="experto.nombre"
+        #nombre="ngModel"
+        required
+        [ngClass]="{'is-invalid': nombre.invalid && (nombre.dirty || nombre.touched)}"
+      >
+      <div class="invalid-feedback" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+        El nombre es obligatorio
       </div>
-  
-      <div class="form-group mb-3">
-        <label for="dni" class="form-label">DNI</label>
-        <input type="text" [(ngModel)]="experto.dni" name="dni" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="apellidos" class="form-label">Apellidos *</label>
+      <input 
+        type="text" 
+        class="form-control"
+        id="apellidos"
+        name="apellidos"
+        [(ngModel)]="experto.apellidos"
+        #apellidos="ngModel"
+        required
+        [ngClass]="{'is-invalid': apellidos.invalid && (apellidos.dirty || apellidos.touched)}"
+      >
+      <div class="invalid-feedback" *ngIf="apellidos.invalid && (apellidos.dirty || apellidos.touched)">
+        Los apellidos son obligatorios
       </div>
-  
-      <div class="form-group mb-3">
-        <label for="especialidad" class="form-label">Especialidad</label>
-        <select 
-          class="form-control" 
-          id="especialidad" 
-          name="especialidad_id_especialidad" 
-          [(ngModel)]="experto.especialidad_id_especialidad" 
-          required>
-          <option [ngValue]="null">Seleccione una especialidad</option>
-          <option *ngFor="let especialidad of especialidades" [ngValue]="especialidad.idEspecialidad">
-            {{especialidad.nombre}}
-          </option>
-        </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="especialidad" class="form-label">Especialidad *</label>
+      <select 
+        class="form-control"
+        id="especialidad"
+        name="especialidad_id_especialidad"
+        [(ngModel)]="experto.especialidad_id_especialidad"
+        #especialidad="ngModel"
+        required
+        [ngClass]="{'is-invalid': especialidad.invalid && (especialidad.dirty || especialidad.touched)}"
+      >
+        <option [ngValue]="null">Seleccione una especialidad</option>
+        <option *ngFor="let esp of especialidades" [value]="esp.idEspecialidad">
+          {{esp.nombre}}
+        </option>
+      </select>
+      <div class="invalid-feedback" *ngIf="especialidad.invalid && (especialidad.dirty || especialidad.touched)">
+        Debe seleccionar una especialidad
       </div>
-  
-      <button type="submit" class="btn btn-primary w-100" [disabled]="!expertoForm.form.valid">
-        {{isEditing ? 'Actualizar' : 'Crear'}}
+    </div>
+
+    <div class="d-flex justify-content-end mt-4">
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="expertoForm.invalid"
+      >
+        {{ isEditing ? 'Actualizar' : 'Crear' }}
       </button>
-    </form>
-  </div>
+    </div>
+  </form>
+</div>

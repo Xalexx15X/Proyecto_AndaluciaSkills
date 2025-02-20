@@ -1,34 +1,91 @@
 <div class="container mt-4">
-    <h2>{{ isEditing ? 'Editar' : 'Crear' }} Participante</h2>
-    
-    <form (ngSubmit)="onSubmit()" #participanteForm="ngForm">
-      <div class="mb-3">
-        <label for="nombre" class="form-label">Nombre</label>
-        <input type="text" class="form-control" id="nombre" name="nombre" [(ngModel)]="participante.nombre" required>
+  <h2 class="text-center mb-4">{{ isEditing ? 'Editar' : 'Crear' }} Participante</h2>
+  <form #participanteForm="ngForm" (ngSubmit)="onSubmit()" class="needs-validation">
+    <div class="mb-3">
+      <label for="nombre" class="form-label">Nombre *</label>
+      <input 
+        type="text" 
+        class="form-control"
+        id="nombre"
+        name="nombre"
+        [(ngModel)]="participante.nombre"
+        #nombre="ngModel"
+        required
+        minlength="2"
+        [ngClass]="{'is-invalid': nombre.invalid && (nombre.dirty || nombre.touched)}"
+      >
+      <div class="invalid-feedback" *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)">
+        <div *ngIf="nombre.errors?.['required']">El nombre es obligatorio</div>
+        <div *ngIf="nombre.errors?.['minlength']">El nombre debe tener al menos 2 caracteres</div>
       </div>
-  
-      <div class="mb-3">
-        <label for="apellidos" class="form-label">Apellidos</label>
-        <input type="text" class="form-control" id="apellidos" name="apellidos" [(ngModel)]="participante.apellidos" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="apellidos" class="form-label">Apellidos *</label>
+      <input 
+        type="text" 
+        class="form-control"
+        id="apellidos"
+        name="apellidos"
+        [(ngModel)]="participante.apellidos"
+        #apellidos="ngModel"
+        required
+        minlength="2"
+        [ngClass]="{'is-invalid': apellidos.invalid && (apellidos.dirty || apellidos.touched)}"
+      >
+      <div class="invalid-feedback" *ngIf="apellidos.invalid && (apellidos.dirty || apellidos.touched)">
+        <div *ngIf="apellidos.errors?.['required']">Los apellidos son obligatorios</div>
+        <div *ngIf="apellidos.errors?.['minlength']">Los apellidos deben tener al menos 2 caracteres</div>
       </div>
-  
-      <div class="mb-3">
-        <label for="centro" class="form-label">Centro</label>
-        <input type="text" class="form-control" id="centro" name="centro" [(ngModel)]="participante.centro" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="centro" class="form-label">Centro *</label>
+      <input 
+        type="text" 
+        class="form-control"
+        id="centro"
+        name="centro"
+        [(ngModel)]="participante.centro"
+        #centro="ngModel"
+        required
+        [ngClass]="{'is-invalid': centro.invalid && (centro.dirty || centro.touched)}"
+      >
+      <div class="invalid-feedback" *ngIf="centro.invalid && (centro.dirty || centro.touched)">
+        El centro es obligatorio
       </div>
-  
-      <div class="mb-3">
-        <label for="especialidad" class="form-label">Especialidad</label>
-        <select class="form-control" id="especialidad" name="especialidad_id_especialidad" [(ngModel)]="participante.especialidad_id_especialidad" required>
-          <option [ngValue]="null">Seleccione una especialidad</option>
-          <option *ngFor="let especialidad of especialidades" [value]="especialidad.idEspecialidad">
-            {{especialidad.nombre}}
-          </option>
-        </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="especialidad" class="form-label">Especialidad *</label>
+      <select 
+        class="form-control"
+        id="especialidad"
+        name="especialidad_id_especialidad"
+        [(ngModel)]="participante.especialidad_id_especialidad"
+        #especialidad="ngModel"
+        required
+        [ngClass]="{'is-invalid': especialidad.invalid && (especialidad.dirty || especialidad.touched)}"
+      >
+        <option [ngValue]="null">Seleccione una especialidad</option>
+        <option *ngFor="let esp of especialidades" [value]="esp.idEspecialidad">
+          {{esp.nombre}}
+        </option>
+      </select>
+      <div class="invalid-feedback" *ngIf="especialidad.invalid && (especialidad.dirty || especialidad.touched)">
+        Debe seleccionar una especialidad
       </div>
-  
-      <button type="submit" class="btn btn-primary" [disabled]="!participanteForm.form.valid">
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <button type="button" class="btn btn-secondary" routerLink="/admin/participantes">Cancelar</button>
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="participanteForm.invalid"
+      >
         {{ isEditing ? 'Actualizar' : 'Crear' }}
       </button>
-    </form>
-  </div>
+    </div>
+  </form>
+</div>

@@ -50,18 +50,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 10px;
+  margin-left: 15px;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .custom-btn-logout:hover {
   background: rgba(255, 255, 255, 0.3);
-  transform: rotate(360deg);
+  transform: rotate(180deg);
 }
 
 .custom-btn-logout i {
   color: white;
-  font-size: 1.25rem;
+  font-size: 16px;
   font-weight: bold;
 }
 
@@ -73,11 +74,8 @@
 .user-profile {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 8px 15px;
-  border-radius: 50px;
-  margin-right: 10px;
-  transition: all 0.3s ease;
+  color: white;
+  padding: 8px;
 }
 
 .user-profile:hover {
@@ -88,8 +86,8 @@
 .user-avatar {
   width: 35px;
   height: 35px;
-  background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,24 +96,25 @@
 
 .user-avatar i {
   color: white;
-  font-size: 1.2rem;
+  font-size: 18px;
 }
 
 .user-info {
   display: flex;
   flex-direction: column;
-  margin-right: 15px;
+  margin-left: 10px;
 }
 
 .username {
   color: white;
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: bold;
+  font-size: 14px;
+  display: block;
   margin-bottom: 2px;
 }
 
 .role {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.75rem;
+  color: #e0e0e0;
+  font-size: 12px;
   text-transform: uppercase;
 }

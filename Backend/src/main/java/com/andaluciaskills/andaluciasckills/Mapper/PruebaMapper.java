@@ -23,8 +23,8 @@ private EspecialidadRepository especialidadRepository;
         dto.setEnunciado(entity.getEnunciado());
         dto.setPuntuacionMaxima(entity.getPuntuacionMaxima());
 
-        if (entity.getEspecialidad() != null) {
-            dto.setEspecialidad_idEspecialidad(entity.getEspecialidad().getIdEspecialidad());
+        if (entity.getEspecialidad_idEspecialidad() != null) {
+            dto.setEspecialidad_idEspecialidad(entity.getEspecialidad_idEspecialidad());
         }
         
         return dto;
@@ -43,7 +43,7 @@ private EspecialidadRepository especialidadRepository;
             Especialidad especialidad = especialidadRepository
                 .findById(dto.getEspecialidad_idEspecialidad())
                 .orElse(null);
-            entity.setEspecialidad(especialidad);
+            entity.setEspecialidad_idEspecialidad(especialidad != null ? especialidad.getIdEspecialidad() : null);
         }
         return entity;
     }

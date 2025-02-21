@@ -36,19 +36,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody DtoUser loginDto) {
-        try {
-            System.out.println("1. Contraseña recibida: " + loginDto.getPassword());
-                        
+        try {             
             User user = userService.findByUsername(loginDto.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
                 
-            System.out.println("2. Hash almacenado en BD: " + user.getPassword());
-            
-            // Verificar si coincide
             boolean matches = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
             System.out.println("3. ¿Coinciden las contraseñas?: " + matches);
-
-            System.out.println("4. Contraseña en texto plano enviada: '" + loginDto.getPassword() + "'");
             
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
@@ -56,10 +49,10 @@ public class AuthController {
             
             String token = jwtTokenProvider.generateToken(authentication);
                 
-            return ResponseEntity.ok(new AuthResponseDTO(token, user.getUsername(), user.getRole(), user.getEspecialidadId()));
+            return ResponseEntity.ok(new AuthResponseDTO(token, user.getUsername(), user.getRole(), user.getEspecialidadId(), user.getApellidos(), user.getNombre()));
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new AuthResponseDTO(null, null, null,null));
+                .body(new AuthResponseDTO(null, null, null, null, null, null));
         }
     }
 

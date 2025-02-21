@@ -1,0 +1,41 @@
+<!-- crear-prueba.component.html -->
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Crear Prueba</h2>
+    <form [formGroup]="pruebaForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="pdfFile" class="form-label">Enunciado (PDF)</label>
+        <input 
+          type="file" 
+          id="pdfFile" 
+          class="form-control" 
+          accept=".pdf"
+          (change)="onFileSelected($event)"
+          [ngClass]="{'is-invalid': !selectedFile && pruebaForm.touched}">
+        <div class="invalid-feedback">
+          Debes seleccionar un archivo PDF.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="puntuacionMaxima" class="form-label">Puntuación Máxima</label>
+        <input type="number" id="puntuacionMaxima" formControlName="puntuacionMaxima" class="form-control" [ngClass]="{'is-invalid': pruebaForm.get('puntuacionMaxima')?.invalid && pruebaForm.get('puntuacionMaxima')?.touched}">
+        <div class="invalid-feedback" *ngIf="pruebaForm.get('puntuacionMaxima')?.invalid && pruebaForm.get('puntuacionMaxima')?.touched">
+          La puntuación máxima es obligatoria y debe ser mayor que 0.
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="especialidadId" class="form-label">Especialidad</label>
+        <input type="number" id="especialidadId" formControlName="especialidadId" class="form-control" [ngClass]="{'is-invalid': pruebaForm.get('especialidadId')?.invalid && pruebaForm.get('especialidadId')?.touched}">
+        <div class="invalid-feedback" *ngIf="pruebaForm.get('especialidadId')?.invalid && pruebaForm.get('especialidadId')?.touched">
+          La especialidad es obligatoria.
+        </div>
+      </div>
+      <div class="d-flex justify-content-end mt-3">
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="!isFormValid">
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>

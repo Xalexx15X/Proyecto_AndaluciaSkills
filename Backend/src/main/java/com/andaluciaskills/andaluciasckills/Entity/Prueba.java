@@ -10,12 +10,15 @@ import lombok.Data;
 public class Prueba {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_prueba")
     private Integer idPrueba;
-    
+
+    @Column(name = "enunciado")
     private String enunciado;
+
+    @Column(name = "puntuacion_maxima")
     private Integer puntuacionMaxima;
 
-    @ManyToOne
-    @JoinColumn(name = "Especialidad_idEspecialidad")
-    private Especialidad especialidad;
+    @Column(name = "especialidad_id_especialidad")
+    private Integer especialidad_idEspecialidad;
 }

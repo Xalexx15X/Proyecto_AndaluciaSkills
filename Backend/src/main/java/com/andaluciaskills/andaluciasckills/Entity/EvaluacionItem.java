@@ -10,15 +10,19 @@ import lombok.Data;
 public class EvaluacionItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_evaluacion_item")
     private Integer idEvaluacionItem;
-    
+
+    @Column(name = "valoracion")
     private Integer valoracion;
 
-    @ManyToOne
-    @JoinColumn(name = "Evaluacion_idEvaluacion")
-    private Evaluacion evaluacion;
+    @Column(name = "evaluacion_id_evaluacion")
+    private Integer evaluacion_idEvaluacion;
 
-    @ManyToOne
-    @JoinColumn(name = "Item_idItem")
-    private Item item;
+    @Column(name = "item_id_item")
+    private Integer item_idItem;
+
+    @Column(name = "prueba_id_prueba")
+    private Integer prueba_idPrueba;
+
 }

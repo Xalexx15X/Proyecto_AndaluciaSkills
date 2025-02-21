@@ -46,6 +46,6 @@ export class VerExpertoComponent implements OnInit {
   }
 
   volver() {
-    this.router.navigate(['/expertos']);
+    this.router.navigate(['admin/expertos']);
   }
 }

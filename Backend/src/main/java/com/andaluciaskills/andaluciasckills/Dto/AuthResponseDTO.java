@@ -10,4 +10,6 @@ public class AuthResponseDTO {
     private String username;
     private String role;
     private Integer especialidadId;
+    private String apellidos; // Cambiado a String
+    private String nombre; // Cambiado a String
 }

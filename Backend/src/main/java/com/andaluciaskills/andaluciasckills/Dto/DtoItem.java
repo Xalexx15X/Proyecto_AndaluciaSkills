@@ -8,5 +8,6 @@ public class DtoItem {
     private String descripcion;
     private Integer peso;
     private Integer gradosConsecucion;
+    private Integer prueba_idPrueba;  // Añadido este campo
 }
 

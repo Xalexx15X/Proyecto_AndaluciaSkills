@@ -12,6 +12,9 @@ import { GestionarParticipantesComponent } from './componentes/gestionar-partici
 import { CrearParticipantesComponent } from './componentes/crear-participantes/crear-participantes.component';
 import { VerParticipantesComponent } from './componentes/ver-participantes/ver-participantes.component';
 import { GestionarPuntuacionesComponent } from './componentes/gestionar-puntuaciones/gestionar-puntuaciones.component';
+import { GestionarPruebasComponent } from './componentes/gestionar-pruebas/gestionar-pruebas.component';
+import { CrearPruebaComponent } from './componentes/crear-prueba/crear-prueba.component';
+import { CrearItemsComponent } from './componentes/crear-items/crear-items.component';
 
 export const routes: Routes = [
   // Rutas públicas
@@ -37,8 +40,12 @@ export const routes: Routes = [
 
   // Rutas de experto
   { path: 'experto', children: [
+    { path: 'puntuaciones', component: GestionarPuntuacionesComponent },
     { path: 'participantes', component: GestionarParticipantesComponent },
-    { path: 'puntuaciones', component: GestionarPuntuacionesComponent }
+    { path: 'pruebas', component: GestionarPruebasComponent },
+    { path: 'crear-prueba', component: CrearPruebaComponent },
+    { path: 'crear-items/:id', component: CrearItemsComponent },
+    { path: 'editar-prueba/:id', component: CrearPruebaComponent }
   ]},
 
   { path: '**', redirectTo: '' }

@@ -1,41 +1,35 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
-import { AuthService } from './auth.service';
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Observable } from "rxjs";
+import { AuthService } from "./auth.service";
+import { Injectable } from "@angular/core";
 
 @Injectable({
   providedIn: 'root'
 })
 export class PuntuacionesService {
-  private apiUrl = 'http://localhost:9000/api/participantes';
+  private apiUrl = 'http://localhost:9000/api/evaluaciones';
 
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService
-  ) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   getParticipantesByEspecialidad(): Observable<any[]> {
     const headers = this.getAuthHeaders();
     const especialidadId = this.authService.getEspecialidadFromToken();
-
-    if (especialidadId === null) {
-      console.error('Especialidad ID es null');
-      return throwError(() => new Error('No se encontró el ID de especialidad'));
+    
+    if (!especialidadId) {
+      console.error('No se encontró ID de especialidad');
+      return new Observable();
     }
 
-    return this.http.get<any[]>(`${this.apiUrl}/porEspecialidad/${especialidadId}`, { headers })
-      .pipe(
-        tap(response => console.log('Participantes obtenidos:', response)),
-        catchError(error => {
-          console.error('Error obteniendo participantes:', error);
-          return throwError(() => error);
-        })
-      );
+    return this.http.get<any[]>(`${this.apiUrl}/porEspecialidad/${especialidadId}`, { headers });
+  }
+
+  guardarEvaluacion(evaluacion: any): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.post(`${this.apiUrl}/crear`, evaluacion, { headers });
   }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = this.authService.getToken();
+    const token = JSON.parse(localStorage.getItem('DATOS_AUTH') || '{}').token;
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 }

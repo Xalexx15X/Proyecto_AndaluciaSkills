@@ -13,8 +13,30 @@ import { AuthService } from '../../servicios/auth.service';
 export class NavbarComponent {
   constructor(public authService: AuthService, private router: Router) { }
 
+  getNombreCompleto(): string {
+    const datos = localStorage.getItem('DATOS_AUTH');
+    if (datos) {
+      const datosJson = JSON.parse(datos);
+      if (datosJson.usuario) {
+        return `${datosJson.usuario.nombre} ${datosJson.usuario.apellidos}`;
+      }
+    }
+    return 'Usuario';
+  }
+
+  getRol(): string {
+    const datos = localStorage.getItem('DATOS_AUTH');
+    if (datos) {
+      const datosJson = JSON.parse(datos);
+      if (datosJson.usuario && datosJson.usuario.role) {
+        return datosJson.usuario.role === 'ROLE_ADMIN' ? 'Administrador' : 'Experto';
+      }
+    }
+    return '';
+  }
+
   cerrarSesion() {
     this.authService.cerrarSesion();
-    this.router.navigate(['/']);
+    this.router.navigate(['/login']);
   }
 }

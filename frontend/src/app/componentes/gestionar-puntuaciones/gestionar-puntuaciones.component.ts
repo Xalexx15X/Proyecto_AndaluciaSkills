@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { PuntuacionesService } from '../../servicios/puntuaciones.service';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../servicios/auth.service';
@@ -9,6 +9,7 @@ import { AuthService } from '../../servicios/auth.service';
   selector: 'app-gestionar-puntuaciones',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
+  providers: [PuntuacionesService],
   templateUrl: './gestionar-puntuaciones.component.html',
   styleUrls: ['./gestionar-puntuaciones.component.css']
 })
@@ -19,7 +20,8 @@ export class GestionarPuntuacionesComponent implements OnInit {
 
   constructor(
     private puntuacionesService: PuntuacionesService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -42,8 +44,11 @@ export class GestionarPuntuacionesComponent implements OnInit {
     });
   }
 
-  puntuar(participanteId: number) {
-    // Aquí implementaremos la lógica para puntuar
-    console.log('Puntuando al participante:', participanteId);
+  puntuar(id: number) {
+    console.log('Intentando navegar a puntuar participante:', id);
+    this.router.navigate(['/experto/puntuar', id]).then(
+      (success) => console.log('Navegación exitosa:', success),
+      (error) => console.error('Error en navegación:', error)
+    );
   }
 }

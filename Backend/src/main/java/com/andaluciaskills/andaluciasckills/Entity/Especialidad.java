@@ -2,8 +2,7 @@ package com.andaluciaskills.andaluciasckills.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.ToString;
-import java.util.List;
+
 
 @Entity
 @Data
@@ -11,19 +10,13 @@ import java.util.List;
 public class Especialidad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_especialidad")
     private Integer idEspecialidad;
-    private String nombre;
+
+    @Column(name = "codigo")
     private String codigo;
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "especialidad", cascade = CascadeType.ALL)
-    private List<Participante> participantes;
+    @Column(name = "nombre")
+    private String nombre;
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "especialidad", cascade = CascadeType.ALL)
-    private List<User> users;
-
-    @ToString.Exclude
-    @OneToMany(mappedBy = "especialidad", cascade = CascadeType.ALL)
-    private List<Prueba> pruebas;
 }

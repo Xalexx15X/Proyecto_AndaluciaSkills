@@ -27,10 +27,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                     return new UsernameNotFoundException("Usuario no encontrado: " + username);
                 });
 
-        System.out.println("2. Usuario encontrado: " + user.getUsername());
-        System.out.println("3. Rol del usuario: " + user.getRole());
-        System.out.println("4. Password (hash): " + user.getPassword());
-
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),

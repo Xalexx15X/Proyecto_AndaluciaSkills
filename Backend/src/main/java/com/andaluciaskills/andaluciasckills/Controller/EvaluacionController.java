@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.andaluciaskills.andaluciasckills.Dto.DtoEvaluancion;
+import com.andaluciaskills.andaluciasckills.Dto.DtoEvaluacion;
 import com.andaluciaskills.andaluciasckills.Error.EvaluacionBadRequestException;
 import com.andaluciaskills.andaluciasckills.Error.EvaluacionNotFoundException;
 import com.andaluciaskills.andaluciasckills.Error.SearchEvaluacionNoResultException;
@@ -28,9 +28,9 @@ public class EvaluacionController {
     
     private final EvaluacionService evaluacionService;
 
-    @GetMapping
-    public ResponseEntity<List<DtoEvaluancion>> getAllEvaluaciones() {
-        List<DtoEvaluancion> result = evaluacionService.findAll();
+    @GetMapping("/ListarEvaluaciones")
+    public ResponseEntity<List<DtoEvaluacion>> getAllEvaluaciones() {
+        List<DtoEvaluacion> result = evaluacionService.findAll();
         if (result.isEmpty()) {
             throw new SearchEvaluacionNoResultException();
         }
@@ -38,26 +38,30 @@ public class EvaluacionController {
     }
 
     @GetMapping("/BuscarEvaluacion/{id}")
-    public ResponseEntity<DtoEvaluancion> getIdEvaluacion(@PathVariable Integer id) {
+    public ResponseEntity<DtoEvaluacion> getIdEvaluacion(@PathVariable Integer id) {
         return ResponseEntity.ok(
             evaluacionService.findById(id)
-                .orElseThrow(() -> new EvaluacionNotFoundException())
+                .orElseThrow(() -> new EvaluacionNotFoundException(id))
         );
     }
 
     @PostMapping("/CrearEvaluacion")
-    public ResponseEntity<DtoEvaluancion> createEvaluacion(@RequestBody DtoEvaluancion dto) {
+    public ResponseEntity<DtoEvaluacion> createEvaluacion(@RequestBody DtoEvaluacion dto) {
         if (dto.getIdEvaluacion() != null) {
-            throw new EvaluacionBadRequestException("No se puede crear una evaluacion con un ID ya existente");
+            throw new EvaluacionBadRequestException("No se puede crear una evaluación con un ID ya existente");
         }
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(evaluacionService.save(dto));
+        try {
+            DtoEvaluacion evaluacionCreada = evaluacionService.save(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(evaluacionCreada);
+        } catch (Exception e) {
+            throw new EvaluacionBadRequestException("Error al crear la evaluación: " + e.getMessage());
+        }
     }
 
-    @PutMapping("ModificarEvaluacion/{id}")
-    public ResponseEntity<DtoEvaluancion> updateEvaluacion(
+    @PutMapping("/ModificarEvaluacion/{id}")
+    public ResponseEntity<DtoEvaluacion> updateEvaluacion(
             @PathVariable Integer id, 
-            @RequestBody DtoEvaluancion dto) {
+            @RequestBody DtoEvaluacion dto) {
         
         if (!id.equals(dto.getIdEvaluacion())) {
             throw new EvaluacionBadRequestException("El ID de la ruta no coincide con el ID del objeto");
@@ -73,7 +77,7 @@ public class EvaluacionController {
         );
     }
 
-    @DeleteMapping("BorrarEvaluacion/{id}")
+    @DeleteMapping("/BorrarEvaluacion/{id}")
     public ResponseEntity<?> deleteEvaluacion(@PathVariable Integer id) {
         evaluacionService.findById(id)
             .orElseThrow(() -> new EvaluacionNotFoundException(id));

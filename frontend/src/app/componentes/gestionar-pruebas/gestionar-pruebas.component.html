@@ -1,0 +1,107 @@
+<!-- gestionar-pruebas.component.html -->
+<div class="container mt-4">
+  <h2>Gestionar Pruebas</h2>
+  
+  <form [formGroup]="pruebaForm" (ngSubmit)="onSubmit()" class="needs-validation">
+    <div class="mb-3">
+      <label for="pdfFile" class="form-label">Enunciado (PDF)</label>
+      <input type="file" 
+             class="form-control" 
+             id="pdfFile" 
+             accept=".pdf"
+             (change)="onFileSelect($event)">
+      <div class="invalid-feedback" *ngIf="!isValidFile">
+          Por favor, seleccione un archivo PDF válido
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="puntuacionMaxima" class="form-label">Puntuación Máxima *</label>
+      <input 
+        type="number" 
+        class="form-control" 
+        [class.is-invalid]="puntuacionMaximaInvalid"
+        id="puntuacionMaxima" 
+        formControlName="puntuacionMaxima">
+      <div class="invalid-feedback" *ngIf="puntuacionMaximaInvalid">
+        La puntuación debe estar entre 0 y 100
+      </div>
+    </div>
+
+    <!-- Sección de Items -->
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Items</h5>
+        <button type="button" class="btn btn-primary" (click)="agregarItem()">
+          <i class="fas fa-plus"></i> Añadir Item
+        </button>
+      </div>
+      <div class="card-body">
+        <div formArrayName="items">
+          <div *ngFor="let item of items.controls; let i=index" [formGroupName]="i" class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">Item {{i + 1}}</h5>
+              
+              <div class="mb-3">
+                <label [for]="'descripcion'+i" class="form-label">Descripción *</label>
+                <input 
+                  [id]="'descripcion'+i" 
+                  type="text" 
+                  class="form-control"
+                  [class.is-invalid]="item.get('descripcion')?.invalid && item.get('descripcion')?.touched"
+                  formControlName="descripcion">
+                <div class="invalid-feedback">
+                  La descripción es requerida y debe tener al menos 5 caracteres
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label [for]="'peso'+i" class="form-label">Peso *</label>
+                  <input 
+                    [id]="'peso'+i" 
+                    type="number" 
+                    class="form-control"
+                    [class.is-invalid]="item.get('peso')?.invalid && item.get('peso')?.touched"
+                    formControlName="peso">
+                  <div class="invalid-feedback">
+                    El peso debe estar entre 1 y 10
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label [for]="'gradosConsecucion'+i" class="form-label">Grados de Consecución *</label>
+                  <input 
+                    [id]="'gradosConsecucion'+i" 
+                    type="number" 
+                    class="form-control"
+                    [class.is-invalid]="item.get('gradosConsecucion')?.invalid && item.get('gradosConsecucion')?.touched"
+                    formControlName="gradosConsecucion">
+                  <div class="invalid-feedback">
+                    Los grados deben estar entre 0 y 100
+                  </div>
+                </div>
+              </div>
+
+              <button type="button" class="btn btn-danger" (click)="eliminarItem(i)">
+                <i class="fas fa-trash"></i> Eliminar Item
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger">
+      {{error}}
+    </div>
+
+    <button 
+      type="submit" 
+      class="btn btn-primary"
+      [disabled]="formInvalid || loading">
+      <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+      {{loading ? 'Guardando...' : 'Guardar Prueba'}}
+    </button>
+  </form>
+</div>

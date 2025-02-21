@@ -44,6 +44,6 @@ export class VerEspecialidadComponent implements OnInit {
   }
 
   volver() {
-    this.router.navigate(['/especialidades']);
+    this.router.navigate(['admin/especialidades']);
   }
 }

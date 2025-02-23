@@ -15,7 +15,8 @@ public class ItemMapper implements GenericMapper<Item, DtoItem> {
         dto.setIdItem(entity.getIdItem());
         dto.setDescripcion(entity.getDescripcion());
         dto.setPeso(entity.getPeso());
-        dto.setGradosConsecucion(entity.getGradosConsecucion());
+        dto.setGrados_consecucion(entity.getGradosConsecucion());
+        dto.setPrueba_id_Prueba(entity.getPruebaIdPrueba());
         return dto;
     }
     
@@ -27,8 +28,8 @@ public class ItemMapper implements GenericMapper<Item, DtoItem> {
         entity.setIdItem(dto.getIdItem());
         entity.setDescripcion(dto.getDescripcion());
         entity.setPeso(dto.getPeso());
-        entity.setGradosConsecucion(dto.getGradosConsecucion());
-        entity.setPruebaIdPrueba(dto.getPrueba_idPrueba()); // Actualizado aquí
+        entity.setGradosConsecucion(dto.getGrados_consecucion());
+        entity.setPruebaIdPrueba(dto.getPrueba_id_Prueba());
         return entity;
     }
 }

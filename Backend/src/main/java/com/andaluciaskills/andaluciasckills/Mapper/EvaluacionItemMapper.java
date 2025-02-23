@@ -17,7 +17,7 @@ public class EvaluacionItemMapper implements GenericMapper<EvaluacionItem, DtoEv
         
         DtoEvaluacionItem dto = new DtoEvaluacionItem();
         dto.setIdEvaluacionItem(entity.getIdEvaluacionItem());
-        dto.setValoracion(entity.getValoracion());
+        dto.setValoracion(entity.getValoracion().doubleValue());
         dto.setEvaluacion_idEvaluacion(entity.getEvaluacion_idEvaluacion());
         dto.setItem_idItem(entity.getItem_idItem());
         return dto;

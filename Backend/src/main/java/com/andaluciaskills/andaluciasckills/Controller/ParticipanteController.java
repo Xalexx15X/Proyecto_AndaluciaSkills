@@ -6,7 +6,6 @@ import com.andaluciaskills.andaluciasckills.Error.ParticipanteNotFoundException;
 import com.andaluciaskills.andaluciasckills.Error.SearchParticipanteNoResultException;
 import com.andaluciaskills.andaluciasckills.Service.ParticipanteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +17,8 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class ParticipanteController {
-    @Autowired
-    private ParticipanteService participanteService;
+    
+    private final ParticipanteService participanteService;
 
     @GetMapping
     public ResponseEntity<List<DtoParticipante>> getAllParticipantes() {
@@ -30,13 +29,11 @@ public class ParticipanteController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/BuscarParticipante/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<DtoParticipante> getParticipante(@PathVariable Integer id) {
-        System.out.println("Buscando participante con ID: " + id);
-        return ResponseEntity.ok(
-            participanteService.findById(id)
-                .orElseThrow(() -> new ParticipanteNotFoundException())
-        );
+        return participanteService.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/CrearParticipante")

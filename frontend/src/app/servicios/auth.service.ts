@@ -3,13 +3,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, Subject, tap, throwError, BehaviorSubject } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
+// Actualizar la interfaz AuthResponse
 interface AuthResponse {
   token: string;
   username: string;
   role: string;
   especialidadId: number;
-  nombre: string;    // Añadido
-  apellidos: string; // Añadido
+  nombre: string;    
+  apellidos: string;
+  idUser: number;    // Añadido el idUser
 }
 
 @Injectable({
@@ -25,7 +27,6 @@ export class AuthService {
   private especialidadId: number | null = null;
 
   constructor(private http: HttpClient) {
-    // Intentar recuperar datos al inicio
     this.recuperarDatosGuardados();
   }
 
@@ -61,6 +62,7 @@ export class AuthService {
         rol: this.rol,
         estaLogueado: this._estaLogueado,
         usuario: this.usuario
+
       });
     }
   }
@@ -75,7 +77,8 @@ export class AuthService {
         username: response.username,
         role: response.role,
         nombre: response.nombre,
-        apellidos: response.apellidos
+        apellidos: response.apellidos,
+        idUser: response.idUser  // Asegurarnos de que se guarda el ID
       },
       especialidadId: response.especialidadId
     };
@@ -108,8 +111,8 @@ export class AuthService {
             this.usuario = {
               username: response.username,
               role: response.role,
-              nombre: response.nombre,       // Añadido
-              apellidos: response.apellidos  // Añadido
+              nombre: response.nombre,       
+              apellidos: response.apellidos  
             };
             this.guardarSesion(response);
             this.authStateChanged.next(true); // Notificar el cambio
@@ -148,7 +151,12 @@ export class AuthService {
   }
 
   getToken(): string {
-    return this.token || '';
+    const datosAuth = localStorage.getItem('DATOS_AUTH');
+    if (datosAuth) {
+      const datos = JSON.parse(datosAuth);
+      return datos.token || '';
+    }
+    return '';
   }
 
   getEspecialidadFromToken(): number | null {
@@ -168,16 +176,7 @@ export class AuthService {
     const datosAuth = localStorage.getItem('DATOS_AUTH');
     if (datosAuth) {
       const datos = JSON.parse(datosAuth);
-      const token = datos.token;
-      if (token) {
-        try {
-          const decodedToken: any = jwtDecode(token);
-          return decodedToken.id; // Asumiendo que el ID está en el token como 'id'
-        } catch (error) {
-          console.error('Error decodificando el token:', error);
-          return null;
-        }
-      }
+      return datos.usuario?.idUser || null;
     }
     return null;
   }
@@ -196,6 +195,17 @@ export class AuthService {
     if (datosAuth) {
       const datos = JSON.parse(datosAuth);
       return datos.usuario?.apellidos || null;
+    }
+    return null;
+  }
+
+  getUserFullName(): {nombre: string, apellidos: string} | null {
+    const userData = JSON.parse(localStorage.getItem('DATOS_AUTH') || '{}');
+    if (userData && userData.nombre && userData.apellidos) {
+      return {
+        nombre: userData.nombre,
+        apellidos: userData.apellidos
+      };
     }
     return null;
   }

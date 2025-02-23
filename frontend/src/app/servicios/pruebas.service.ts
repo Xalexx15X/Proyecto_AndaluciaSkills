@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { from, Observable, throwError } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -26,16 +26,15 @@ export class PruebasService {
     return this.http.get(`${this.apiUrl}/${id}`, { headers });
   }
 
-  // Crear una nueva prueba
-  createPrueba(pruebaData: any): Observable<any> {
+  // Crear una nueva prueba (método antiguo)
+  createPruebaSingle(pruebaData: any): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post(`${this.apiUrl}/crear`, pruebaData, { headers });
   }
 
-  // Crear múltiples items
   createItems(items: any[]): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.post(`${this.apiUrl}/items/crear`, items, { headers });
+    return this.http.post(`${this.apiUrl}/CrearItems`, items, { headers });
   }
 
   // Obtener especialidades (si este método debería estar en otro servicio, muévelo)
@@ -44,39 +43,54 @@ export class PruebasService {
     return this.http.get<any[]>('http://localhost:9000/api/especialidades', { headers });
   }
 
-  createPruebaWithItems(prueba: any, items: any[], file: File): Observable<any> {
+  createPruebaWithItems(data: {prueba: any, items: any[]}): Observable<any> {
     const headers = this.getAuthHeaders();
-    const formData = new FormData();
-    
-    formData.append('file', file);
-    formData.append('prueba', JSON.stringify({
-        ...prueba,
-        especialidad_idEspecialidad: this.authService.getEspecialidadFromToken()
-    }));
-    formData.append('items', JSON.stringify(items));
-  
-    return this.http.post(`${this.apiUrl}/CrearPruebaConItems`, formData, { headers })
-        .pipe(
-            catchError(error => {
-                console.error('Error al crear prueba con items:', error);
-                return throwError(() => error);
-            })
-        );
+    return this.http.post(`${this.apiUrl}/CrearPruebaConItems`, data, { headers })
+      .pipe(
+        catchError(error => {
+          console.error('Error al crear prueba con items:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
-  createPruebaWithFile(formData: FormData): Observable<any> {
+  // 1. Primero crear la prueba
+  createPrueba(prueba: any): Observable<any> {
     const headers = this.getAuthHeaders();
-    // Importante: No establecer 'Content-Type' aquí, 
-    // dejarlo que lo establezca automáticamente para el FormData
-    return this.http.post(`${this.apiUrl}/CrearPruebaConFile`, formData, { 
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${this.authService.getToken()}`
-      })
-    }).pipe(
-      catchError(error => {
-        console.error('Error al crear prueba con archivo:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.http.post(`${this.apiUrl}/CrearPrueba`, prueba, { headers });
   }
+
+  // 2. Luego crear los items para esa prueba
+  createItemsForPrueba(pruebaId: number, items: any[]): Observable<any> {
+    const headers = this.getAuthHeaders();
+    
+    const formattedItems = items.map(item => ({
+        descripcion: item.descripcion,
+        peso: item.peso,
+        grados_consecucion: item.grados_consecucion,
+        prueba_id_Prueba: pruebaId // Asegúrate de que el nombre coincida exactamente
+    }));
+
+    console.log('Items formateados a enviar:', formattedItems);
+    return this.http.post(`${this.apiUrl}/CrearItems`, formattedItems, { headers });
+  }
+
+  getPruebasByEspecialidad(): Observable<any[]> {
+    const especialidadId = this.authService.getEspecialidadFromToken();
+    if (!especialidadId) {
+      console.error('No se encontró ID de especialidad en el token');
+      return throwError(() => new Error('No se encontró ID de especialidad'));
+    }
+    
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(`${this.apiUrl}/ListarPruebasPorEspecialidad/${especialidadId}`, { headers })
+      .pipe(
+        tap(pruebas => console.log('Pruebas obtenidas:', pruebas)),
+        catchError(error => {
+          console.error('Error al obtener pruebas:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
 }

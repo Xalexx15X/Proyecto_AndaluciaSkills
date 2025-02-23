@@ -45,7 +45,7 @@ public class EvaluacionController {
         );
     }
 
-    @PostMapping("/CrearEvaluacion")
+    @PostMapping("/ ")
     public ResponseEntity<DtoEvaluacion> createEvaluacion(@RequestBody DtoEvaluacion dto) {
         if (dto.getIdEvaluacion() != null) {
             throw new EvaluacionBadRequestException("No se puede crear una evaluación con un ID ya existente");

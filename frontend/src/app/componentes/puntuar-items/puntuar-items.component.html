@@ -1,0 +1,57 @@
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Puntuar Items de la Prueba</h2>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- Mensaje de alerta -->
+  <div *ngIf="mensaje" class="alert alert-{{mensaje.tipo}} alert-dismissible fade show" role="alert">
+    {{mensaje.texto}}
+    <button type="button" class="btn-close" (click)="mensaje = null" aria-label="Close"></button>
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Formulario de puntuación -->
+  <div *ngIf="!loading && !error && items.length > 0" class="card">
+    <div class="card-body">
+      <form (ngSubmit)="guardarPuntuaciones()">
+        <div class="mb-3" *ngFor="let item of items">
+            <label [for]="'item_' + item.idItem" class="form-label">
+              {{ item.descripcion }}
+              <small class="text-muted">(Puntuación máxima: {{ item.puntuacionMaxima || 10 }})</small>
+            </label>
+            <input 
+              type="number" 
+              class="form-control"
+              [id]="'item_' + item.idItem"
+              [(ngModel)]="valoraciones[item.idItem]"
+              [name]="'valoracion_' + item.idItem"
+              [max]="item.puntuacionMaxima || 10"
+              min="0"
+              step="0.1"
+              required
+            >
+        </div>
+
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-primary" [disabled]="loading">
+            Guardar Puntuaciones
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mensaje cuando no hay items -->
+  <div *ngIf="!loading && !error && items.length === 0" class="alert alert-info">
+    No hay items para puntuar en esta prueba.
+  </div>
+</div>

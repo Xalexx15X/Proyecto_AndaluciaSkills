@@ -13,8 +13,8 @@ import { CrearParticipantesComponent } from './componentes/crear-participantes/c
 import { VerParticipantesComponent } from './componentes/ver-participantes/ver-participantes.component';
 import { GestionarPuntuacionesComponent } from './componentes/gestionar-puntuaciones/gestionar-puntuaciones.component';
 import { GestionarPruebasComponent } from './componentes/gestionar-pruebas/gestionar-pruebas.component';
-import { CrearPruebaComponent } from './componentes/crear-prueba/crear-prueba.component';
-import { CrearItemsComponent } from './componentes/crear-items/crear-items.component';
+import { ListarPruebaPuntuacionComponent } from './componentes/listar-prueba-puntuacion/listar-prueba-puntuacion.component';
+import { PuntuarItemsComponent } from './componentes/puntuar-items/puntuar-items.component';
 
 export const routes: Routes = [
   // Rutas públicas
@@ -43,9 +43,8 @@ export const routes: Routes = [
     { path: 'puntuaciones', component: GestionarPuntuacionesComponent },
     { path: 'participantes', component: GestionarParticipantesComponent },
     { path: 'pruebas', component: GestionarPruebasComponent },
-    { path: 'crear-prueba', component: CrearPruebaComponent },
-    { path: 'crear-items/:id', component: CrearItemsComponent },
-    { path: 'editar-prueba/:id', component: CrearPruebaComponent }
+    { path: 'listar-prueba-puntuacion/:participanteId', component: ListarPruebaPuntuacionComponent},
+    { path: 'puntuar-items/:participanteId/:pruebaId', component: PuntuarItemsComponent }
   ]},
 
   { path: '**', redirectTo: '' }

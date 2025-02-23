@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/api/item")
+@RequestMapping("/api/items")
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
@@ -80,6 +80,16 @@ public class ItemController {
             .orElseThrow(() -> new ItemNotFoundException(id));
         itemService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/porPrueba/{pruebaId}")
+    public ResponseEntity<List<DtoItem>> getItemsByPrueba(@PathVariable Integer pruebaId) {
+        try {
+            List<DtoItem> items = itemService.findByPruebaId(pruebaId);
+            return ResponseEntity.ok(items);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
 

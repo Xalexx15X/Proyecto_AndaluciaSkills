@@ -49,10 +49,10 @@ public class AuthController {
             
             String token = jwtTokenProvider.generateToken(authentication);
                 
-            return ResponseEntity.ok(new AuthResponseDTO(token, user.getUsername(), user.getRole(), user.getEspecialidadId(), user.getApellidos(), user.getNombre()));
+            return ResponseEntity.ok(new AuthResponseDTO(token, user.getUsername(), user.getRole(), user.getApellidos(), user.getNombre(), user.getEspecialidadId(), user.getIdUser()));
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new AuthResponseDTO(null, null, null, null, null, null));
+                .body(new AuthResponseDTO(null, null, null, null, null, null, null));
         }
     }
 

@@ -3,13 +3,18 @@ package com.andaluciaskills.andaluciasckills.Controller;
 
 import com.andaluciaskills.andaluciasckills.Dto.DtoPrueba;
 import com.andaluciaskills.andaluciasckills.Dto.DtoItem;
+import com.andaluciaskills.andaluciasckills.Dto.DtoEvaluacion;
+import com.andaluciaskills.andaluciasckills.Dto.DtoEvaluacionItem;
 import com.andaluciaskills.andaluciasckills.Error.PruebaBadRequestException;
 import com.andaluciaskills.andaluciasckills.Error.PruebaNotFoundException;
-import com.andaluciaskills.andaluciasckills.Service.FileStorageService;
+import com.andaluciaskills.andaluciasckills.Service.EvaluacionItemService;
+import com.andaluciaskills.andaluciasckills.Service.EvaluacionService;
+import com.andaluciaskills.andaluciasckills.Service.ItemService;
 import com.andaluciaskills.andaluciasckills.Service.PruebaService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +25,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
 import lombok.RequiredArgsConstructor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -32,64 +37,64 @@ import com.fasterxml.jackson.core.type.TypeReference;
 @RequiredArgsConstructor
 public class PruebaController {
     private final PruebaService pruebaService;
-    private final FileStorageService fileStorageService;
+    private final ItemService itemService;
+    private final EvaluacionService evaluacionService;
+    private final EvaluacionItemService evaluacionItemService;
 
     @GetMapping("/ListarPruebas")
     public ResponseEntity<List<DtoPrueba>> listarPruebas() {
         return ResponseEntity.ok(pruebaService.findAll());
     }
 
+    @GetMapping("/ListarPruebasPorEspecialidad/{especialidadId}")
+    public ResponseEntity<List<DtoPrueba>> getPruebasByEspecialidad(@PathVariable Integer especialidadId) {
+        try {
+            List<DtoPrueba> pruebas = pruebaService.findByEspecialidadId(especialidadId);
+            return ResponseEntity.ok(pruebas);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/CrearPrueba")
     public ResponseEntity<DtoPrueba> crearPrueba(@RequestBody DtoPrueba prueba) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(pruebaService.save(prueba));
+        try {
+            DtoPrueba pruebaCreada = pruebaService.save(prueba);
+            return ResponseEntity.status(HttpStatus.CREATED).body(pruebaCreada);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/CrearPruebaConItems")
     public ResponseEntity<DtoPrueba> crearPruebaConItems(@RequestBody Map<String, Object> request) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            
-            // Convertir el JSON a objetos
             DtoPrueba prueba = mapper.convertValue(request.get("prueba"), DtoPrueba.class);
             List<DtoItem> items = mapper.convertValue(
                 request.get("items"), 
                 new TypeReference<List<DtoItem>>() {}
             );
             
-            // Llamar al servicio que maneja la transacción
             DtoPrueba pruebaCreada = pruebaService.crearPruebaConItems(prueba, items);
-            
             return ResponseEntity.status(HttpStatus.CREATED).body(pruebaCreada);
         } catch (Exception e) {
-            // Mejorar el manejo de errores
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
-    @PostMapping("/CrearPruebaConFile")
-    public ResponseEntity<?> crearPruebaConFile(
-        @RequestParam("file") MultipartFile file,
-        @RequestParam("prueba") String pruebaJson
-    ) {
+    @PostMapping("/CrearItems")
+    public ResponseEntity<List<DtoItem>> crearItems(@RequestBody List<DtoItem> items) {
         try {
-            // Guardar el archivo
-            String fileName = fileStorageService.storeFile(file);
-            String fileUrl = "/uploads/" + fileName;
-
-            // Convertir JSON a objeto
-            ObjectMapper mapper = new ObjectMapper();
-            DtoPrueba dtoPrueba = mapper.readValue(pruebaJson, DtoPrueba.class);
-            
-            // Establecer la URL del archivo como enunciado
-            dtoPrueba.setEnunciado(fileUrl);
-
-            // Crear la prueba usando el método save() en lugar de crearPrueba()
-            DtoPrueba pruebaCreada = pruebaService.save(dtoPrueba);
-            return ResponseEntity.status(HttpStatus.CREATED).body(pruebaCreada);
+            System.out.println("Items recibidos: " + items); // Añadir log
+            List<DtoItem> itemsCreados = itemService.saveAll(items);
+            return ResponseEntity.status(HttpStatus.CREATED).body(itemsCreados);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            System.err.println("Error al crear items: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
@@ -126,4 +131,78 @@ public class PruebaController {
         return ResponseEntity.noContent().build();
     } 
 
+    @PostMapping("/evaluaciones/{evaluacionId}/valoraciones")
+    public ResponseEntity<DtoEvaluacion> actualizarValoraciones(
+            @PathVariable Integer evaluacionId,
+            @RequestBody List<DtoEvaluacionItem> evaluacionItems) {
+        try {
+            System.out.println("Recibiendo items para evaluación: " + evaluacionId);
+            
+            // Guardamos los items
+            for (DtoEvaluacionItem item : evaluacionItems) {
+                evaluacionItemService.save(item);
+            }
+            
+            // Actualizamos la nota final automáticamente
+            DtoEvaluacion evaluacionActualizada = evaluacionService.actualizarNotaFinalAutomatica(evaluacionId);
+            
+            System.out.println("Evaluación actualizada: " + evaluacionActualizada);
+            return ResponseEntity.ok(evaluacionActualizada);
+        } catch (Exception e) {
+            System.err.println("Error al actualizar valoraciones: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/evaluacion")
+    public ResponseEntity<DtoEvaluacion> crearEvaluacion(@RequestBody Map<String, Object> request) {
+        try {
+            System.out.println("Recibiendo request para crear evaluación: " + request);
+            
+            // Convertir los valores a Integer de forma segura
+            Integer pruebaId = ((Number) request.get("pruebaId")).intValue();
+            Integer participanteId = ((Number) request.get("participanteId")).intValue();
+            Integer userId = ((Number) request.get("userId")).intValue();
+            Double notaFinal = 0.0;
+
+            // Verificar si ya existe una evaluación para esta prueba y participante
+            boolean existeEvaluacion = pruebaService.existeEvaluacion(pruebaId, participanteId);
+            if (existeEvaluacion) {
+                throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, 
+                    "Ya existe una evaluación para este participante en esta prueba"
+                );
+            }
+
+            System.out.println("Valores convertidos:");
+            System.out.println("pruebaId: " + pruebaId);
+            System.out.println("participanteId: " + participanteId);
+            System.out.println("userId: " + userId);
+            System.out.println("notaFinal: " + notaFinal);
+
+            DtoEvaluacion evaluacionCreada = evaluacionService.crearEvaluacion(pruebaId, participanteId, userId, notaFinal);
+            
+            System.out.println("Evaluación creada: " + evaluacionCreada);
+            return ResponseEntity.status(HttpStatus.CREATED).body(evaluacionCreada);
+        } catch (ResponseStatusException e) {
+            throw e; // Re-lanzar excepciones de estado HTTP
+        } catch (Exception e) {
+            System.err.println("Error al crear evaluación: ");
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error al crear la evaluación: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/evaluacion/existe/{pruebaId}/{participanteId}")
+    public ResponseEntity<Boolean> verificarEvaluacionExistente(
+            @PathVariable Integer pruebaId,
+            @PathVariable Integer participanteId) {
+        try {
+            boolean existe = pruebaService.existeEvaluacion(pruebaId, participanteId);
+            return ResponseEntity.ok(existe);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

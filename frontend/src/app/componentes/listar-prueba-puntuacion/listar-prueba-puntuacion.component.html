@@ -1,0 +1,37 @@
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Selecciona una Pae y Puntuala</h2>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- Spinner de carga -->
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Lista de pruebas -->
+  <div *ngIf="!loading && !error && pruebas.length > 0" class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="list-group">
+        <a *ngFor="let prueba of pruebas" 
+           (click)="seleccionarPrueba(prueba.idPrueba)"
+           class="list-group-item list-group-item-action">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ prueba.enunciado }}</h5>
+            <small>Puntuación máxima: {{ prueba.puntuacionMaxima }}</small>
+          </div>
+          <p class="mb-1">ID Prueba: {{ prueba.idPrueba }}</p>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje cuando no hay pruebas -->
+  <div *ngIf="!loading && !error && pruebas.length === 0" class="alert alert-info">
+    No hay pruebas disponibles para esta especialidad.
+  </div>
+</div>

@@ -9,7 +9,8 @@ public class AuthResponseDTO {
     private String token;
     private String username;
     private String role;
+    private String nombre;
+    private String apellidos;
     private Integer especialidadId;
-    private String apellidos; // Cambiado a String
-    private String nombre; // Cambiado a String
+    private Integer idUser;
 }

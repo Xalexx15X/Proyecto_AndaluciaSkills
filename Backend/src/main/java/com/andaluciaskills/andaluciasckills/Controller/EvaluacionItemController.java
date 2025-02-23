@@ -2,6 +2,7 @@ package com.andaluciaskills.andaluciasckills.Controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.andaluciaskills.andaluciasckills.Dto.DtoEvaluacionItem;
 import com.andaluciaskills.andaluciasckills.Error.EvaluacionItemBadRequestException;
@@ -9,7 +10,6 @@ import com.andaluciaskills.andaluciasckills.Error.EvaluacionItemNotFoundExceptio
 import com.andaluciaskills.andaluciasckills.Error.SearchEvaluacionItemNoResultException;
 import com.andaluciaskills.andaluciasckills.Service.EvaluacionItemService;
 
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -25,9 +25,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/evaluacionItem")
-@RequiredArgsConstructor
 public class EvaluacionItemController {
+
     private final EvaluacionItemService evaluacionItemService;
+
+    public EvaluacionItemController(EvaluacionItemService evaluacionItemService) {
+        this.evaluacionItemService = evaluacionItemService;
+    }
 
     @GetMapping
     public ResponseEntity<List<DtoEvaluacionItem>> getAllEvaluacionItem() {
@@ -48,11 +52,65 @@ public class EvaluacionItemController {
 
     @PostMapping("/CrearEvaluacionItem")
     public ResponseEntity<DtoEvaluacionItem> createEvaluacionItem(@RequestBody DtoEvaluacionItem dto) {
-        if (dto.getIdEvaluacionItem() != null) {
-            throw new EvaluacionItemBadRequestException("No se puede crear una evaluacion con un ID ya existente");
+        try {
+            System.out.println("Recibiendo item para crear: " + dto);
+            
+            // Validar el item
+            if (dto.getEvaluacion_idEvaluacion() == null) {
+                throw new IllegalArgumentException("El ID de evaluación no puede ser null");
+            }
+            if (dto.getItem_idItem() == null) {
+                throw new IllegalArgumentException("El ID del item no puede ser null");
+            }
+            if (dto.getPrueba_id_prueba() == null) {
+                throw new IllegalArgumentException("El ID de la prueba no puede ser null");
+            }
+            if (dto.getValoracion() == null) {
+                throw new IllegalArgumentException("La valoración no puede ser null");
+            }
+
+            DtoEvaluacionItem itemCreado = evaluacionItemService.save(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(itemCreado);
+        } catch (Exception e) {
+            System.err.println("Error al crear item de evaluación: " + e.getMessage());
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error al crear el item: " + e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(evaluacionItemService.save(dto));
+    }
+
+    @PostMapping("/CrearEvaluacionItems")
+    public ResponseEntity<List<DtoEvaluacionItem>> createEvaluacionItems(@RequestBody List<DtoEvaluacionItem> dtos) {
+        try {
+            System.out.println("Recibiendo items para crear: " + dtos);
+            
+            // Validar la lista
+            if (dtos == null || dtos.isEmpty()) {
+                throw new IllegalArgumentException("La lista de items no puede estar vacía");
+            }
+
+            // Validar cada item
+            for (DtoEvaluacionItem dto : dtos) {
+                if (dto.getEvaluacion_idEvaluacion() == null) {
+                    throw new IllegalArgumentException("El ID de evaluación no puede ser null");
+                }
+                if (dto.getItem_idItem() == null) {
+                    throw new IllegalArgumentException("El ID del item no puede ser null");
+                }
+                if (dto.getPrueba_id_prueba() == null) {
+                    throw new IllegalArgumentException("El ID de la prueba no puede ser null");
+                }
+                if (dto.getValoracion() == null) {
+                    throw new IllegalArgumentException("La valoración no puede ser null");
+                }
+            }
+
+            List<DtoEvaluacionItem> itemsCreados = evaluacionItemService.saveAll(dtos);
+            return ResponseEntity.status(HttpStatus.CREATED).body(itemsCreados);
+        } catch (Exception e) {
+            System.err.println("Error al crear items de evaluación: " + e.getMessage());
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error al crear los items: " + e.getMessage());
+        }
     }
 
     @PutMapping("ModificarEvaluacionItem/{id}")

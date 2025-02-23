@@ -13,9 +13,6 @@ public class EvaluacionItem {
     @Column(name = "id_evaluacion_item")
     private Integer idEvaluacionItem;
 
-    @Column(name = "valoracion")
-    private Integer valoracion;
-
     @Column(name = "evaluacion_id_evaluacion")
     private Integer evaluacion_idEvaluacion;
 
@@ -25,4 +22,8 @@ public class EvaluacionItem {
     @Column(name = "prueba_id_prueba")
     private Integer prueba_idPrueba;
 
+    @Column(name = "valoracion")
+    private Double valoracion;
+
+    
 }

@@ -1,5 +1,6 @@
 package com.andaluciaskills.andaluciasckills.Dto;
 
+
 import lombok.Data;
 
 @Data
@@ -11,4 +12,5 @@ public class DtoPrueba {
     private Integer participante_idParticipante;
     private String nombreUser;
     private String apellidosUser;
+    
 }

@@ -1,21 +1,21 @@
 <div class="container mt-4">
     <h2 class="text-center mb-4">Ganadores por Especialidad</h2>
     <div class="table-responsive">
-      <table class="table custom-table">
-        <thead>
-          <tr>
-            <th>Especialidad</th>
-            <th>Nombre del Ganador</th>
-            <th>Nota Media</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let ganador of ganadores">
-            <td>{{ ganador.especialidad }}</td>
-            <td>{{ ganador.nombre }}</td>
-            <td>{{ ganador.notaMedia }}</td>
-          </tr>
-        </tbody>
-      </table>
+        <table class="table custom-table">
+            <thead>
+                <tr>
+                    <th>Especialidad</th>
+                    <th>Nombre del Ganador</th>
+                    <th>Nota Media</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let ganador of ganadores">
+                    <td>{{ ganador.especialidad }}</td>
+                    <td>{{ ganador.nombreGanador }}</td>
+                    <td>{{ ganador.notaMedia | number:'1.2-2' }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-  </div>
+</div>

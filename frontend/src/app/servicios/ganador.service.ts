@@ -6,13 +6,13 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class GanadoresService {
-  private apiUrl = 'http://localhost:9000/api/ganadores';
+  private apiUrl = 'http://localhost:9000/api/evaluaciones';
 
   constructor(private http: HttpClient) { }
 
   getGanadores(): Observable<any[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any[]>(`${this.apiUrl}/obtener`, { headers });
+    return this.http.get<any[]>(`${this.apiUrl}/ganadores`, { headers });
   }
 
   private getAuthHeaders(): HttpHeaders {

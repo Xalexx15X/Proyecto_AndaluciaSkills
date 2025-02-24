@@ -26,7 +26,9 @@
         <div class="mb-3" *ngFor="let item of items">
             <label [for]="'item_' + item.idItem" class="form-label">
               {{ item.descripcion }}
-              <small class="text-muted">(Puntuación máxima: {{ item.puntuacionMaxima || 10 }})</small>
+              <small class="text-muted">
+                (Peso: {{ item.peso }}% - Puntuación máxima: {{ item.peso/10 }})
+              </small>
             </label>
             <input 
               type="number" 
@@ -34,7 +36,7 @@
               [id]="'item_' + item.idItem"
               [(ngModel)]="valoraciones[item.idItem]"
               [name]="'valoracion_' + item.idItem"
-              [max]="item.puntuacionMaxima || 10"
+              [max]="item.peso/10"
               min="0"
               step="0.1"
               required

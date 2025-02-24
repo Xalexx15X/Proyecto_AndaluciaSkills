@@ -11,6 +11,8 @@ import { CommonModule } from '@angular/common';
 })
 export class VisualizarGanadoresComponent implements OnInit {
   ganadores: any[] = [];
+  loading = false;
+  error: string | null = null;
 
   constructor(private ganadoresService: GanadoresService) { }
 
@@ -19,13 +21,24 @@ export class VisualizarGanadoresComponent implements OnInit {
   }
 
   cargarGanadores(): void {
-    this.ganadoresService.getGanadores().subscribe(
-      (data) => {
+    this.loading = true;
+    this.error = null;
+    
+    this.ganadoresService.getGanadores().subscribe({
+      next: (data) => {
+        console.log('Datos recibidos:', data);
         this.ganadores = data;
+        this.loading = false;
+        if (this.ganadores.length === 0) {
+          this.error = 'No hay ganadores disponibles';
+        }
       },
-      (error: any) => {
-        console.error('Error al cargar ganadores:', error);
+      error: (error) => {
+        console.error('Error completo:', error);
+        this.error = error.error?.mensaje || 'Error al cargar los ganadores';
+        this.loading = false;
+        this.ganadores = [];
       }
-    );
+    });
   }
 }

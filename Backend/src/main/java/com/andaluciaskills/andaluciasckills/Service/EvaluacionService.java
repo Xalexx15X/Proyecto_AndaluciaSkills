@@ -8,11 +8,13 @@ import com.andaluciaskills.andaluciasckills.Mapper.EvaluacionMapper;
 import com.andaluciaskills.andaluciasckills.Repository.EvaluacionRepository;
 import com.andaluciaskills.andaluciasckills.Repository.EvaluacionItemRepository;
 import com.andaluciaskills.andaluciasckills.Service.base.EvaluacionBaseService;
-import com.andaluciaskills.andaluciasckills.Service.ItemService;
 
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 @Service
 public class EvaluacionService implements EvaluacionBaseService {
@@ -37,25 +39,40 @@ public class EvaluacionService implements EvaluacionBaseService {
             return 0.0;
         }
         
-        double sumaPonderada = 0.0;
+        double notaFinal = 0.0;
         double sumaPesos = 0.0;
-        
+
         for (EvaluacionItem evaluacionItem : items) {
             if (evaluacionItem.getValoracion() != null) {
-                // Obtener el Item asociado y su peso
+                // Obtener el Item y su peso
                 Optional<DtoItem> item = itemService.findById(evaluacionItem.getItem_idItem());
-                double peso = item.map(i -> i.getPeso() != null ? i.getPeso() : 1.0).orElse(1.0);
                 
-                sumaPonderada += (evaluacionItem.getValoracion() * peso);
-                sumaPesos += peso;
-                
-                System.out.println("Item ID: " + evaluacionItem.getItem_idItem() + 
-                                 ", Valoración: " + evaluacionItem.getValoracion() +
-                                 ", Peso: " + peso);
+                if (item.isPresent()) {
+                    Integer peso = item.get().getPeso(); // Peso en porcentaje (ejemplo: 30 para 30%)
+                    Double puntuacionMaxima = item.get().getPuntuacionMaxima();
+                    Double valoracion = evaluacionItem.getValoracion();
+                    
+                    // Calculamos la nota ponderada
+                    // (valoración / puntuación máxima) * peso
+                    double notaPonderada = (valoracion / puntuacionMaxima) * peso;
+                    notaFinal += notaPonderada;
+                    sumaPesos += peso;
+                    
+                    System.out.println("Item: " + item.get().getDescripcion());
+                    System.out.println("Peso: " + peso + "%");
+                    System.out.println("Puntuación máxima: " + puntuacionMaxima);
+                    System.out.println("Valoración: " + valoracion);
+                    System.out.println("Nota ponderada: " + notaPonderada);
+                }
             }
         }
         
-        Double notaFinal = sumaPesos > 0 ? sumaPonderada / sumaPesos : 0.0;
+        // Normalizar la nota final (por si los pesos no suman 100)
+        if (sumaPesos > 0) {
+            notaFinal = (notaFinal / sumaPesos) * 100;
+        }
+        
+        // Redondear a 2 decimales
         notaFinal = Math.round(notaFinal * 100.0) / 100.0;
         
         System.out.println("Nota final calculada para evaluación " + evaluacionId + ": " + notaFinal);
@@ -172,23 +189,79 @@ public class EvaluacionService implements EvaluacionBaseService {
 
     public DtoEvaluacion actualizarNotaFinalAutomatica(Integer evaluacionId) {
         try {
-            System.out.println("Calculando y actualizando nota final para evaluación: " + evaluacionId);
-            
-            // Calcular la nota final
-            Double notaFinal = calcularNotaFinal(evaluacionId);
-            
-            // Actualizar la evaluación con la nota calculada
             Evaluacion evaluacion = evaluacionRepository.findById(evaluacionId)
-                .orElseThrow(() -> new RuntimeException("Evaluación no encontrada con ID: " + evaluacionId));
+                .orElseThrow(() -> new RuntimeException("Evaluación no encontrada"));
+
+            // Obtener todos los items de la evaluación
+            List<EvaluacionItem> evaluacionItems = evaluacionItemRepository.findByEvaluacionIdEvaluacion(evaluacionId);
             
+            if (evaluacionItems.isEmpty()) {
+                throw new RuntimeException("No se encontraron items para la evaluación");
+            }
+
+            double sumaPonderada = 0.0;
+            double sumaPesos = 0.0;
+
+            for (EvaluacionItem evaluacionItem : evaluacionItems) {
+                // Obtener el Item usando ItemService
+                Optional<DtoItem> itemOpt = itemService.findById(evaluacionItem.getItem_idItem());
+                
+                if (itemOpt.isPresent()) {
+                    DtoItem item = itemOpt.get();
+                    double pesoItem = item.getPeso(); // El peso es el porcentaje (ej: 30 significa 30%)
+                    double valoracion = evaluacionItem.getValoracion();
+                    
+                    // Si el peso es 30%, el máximo que puede poner es 3
+                    // Convertimos la valoración a una escala sobre 10
+                    double valoracionSobre10 = (valoracion * 10) / (pesoItem / 10);
+                    
+                    System.out.println("Item ID: " + item.getIdItem());
+                    System.out.println("Peso: " + pesoItem + "%");
+                    System.out.println("Valoración original: " + valoracion);
+                    System.out.println("Valoración sobre 10: " + valoracionSobre10);
+                    
+                    sumaPonderada += (valoracionSobre10 * pesoItem);
+                    sumaPesos += pesoItem;
+                }
+            }
+
+            // Calcular nota final sobre 10
+            double notaFinal = (sumaPesos > 0) ? (sumaPonderada / sumaPesos) : 0.0;
+            
+            // Redondear a 2 decimales
+            notaFinal = Math.round(notaFinal * 100.0) / 100.0;
+            
+            // Guardar la nota final
             evaluacion.setNotaFinal(notaFinal);
             Evaluacion evaluacionActualizada = evaluacionRepository.save(evaluacion);
             
-            System.out.println("Nota final actualizada automáticamente: " + notaFinal);
+            System.out.println("Nota final calculada: " + notaFinal);
+            
             return evaluacionMapper.toDto(evaluacionActualizada);
+            
         } catch (Exception e) {
-            System.err.println("Error al actualizar nota final automática: " + e.getMessage());
-            throw new RuntimeException("Error al actualizar la nota final automáticamente", e);
+            System.err.println("Error al calcular nota final: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error al calcular la nota final", e);
         }
+    }
+
+    public List<Map<String, Object>> obtenerGanadores() {
+        List<Map<String, Object>> todosLosResultados = evaluacionRepository.findGanadoresPorEspecialidad();
+        
+        // Usar un Map para guardar solo el mejor de cada especialidad
+        Map<String, Map<String, Object>> ganadoresPorEspecialidad = new HashMap<>();
+        
+        for (Map<String, Object> resultado : todosLosResultados) {
+            String especialidad = (String) resultado.get("especialidad");
+            Double notaMedia = (Double) resultado.get("notaMedia");
+            
+            if (!ganadoresPorEspecialidad.containsKey(especialidad) || 
+                (Double) ganadoresPorEspecialidad.get(especialidad).get("notaMedia") < notaMedia) {
+                ganadoresPorEspecialidad.put(especialidad, resultado);
+            }
+        }
+        
+        return new ArrayList<>(ganadoresPorEspecialidad.values());
     }
 }

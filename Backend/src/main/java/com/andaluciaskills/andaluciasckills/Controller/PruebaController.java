@@ -14,7 +14,6 @@ import com.andaluciaskills.andaluciasckills.Service.PruebaService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -174,12 +173,6 @@ public class PruebaController {
                     "Ya existe una evaluación para este participante en esta prueba"
                 );
             }
-
-            System.out.println("Valores convertidos:");
-            System.out.println("pruebaId: " + pruebaId);
-            System.out.println("participanteId: " + participanteId);
-            System.out.println("userId: " + userId);
-            System.out.println("notaFinal: " + notaFinal);
 
             DtoEvaluacion evaluacionCreada = evaluacionService.crearEvaluacion(pruebaId, participanteId, userId, notaFinal);
             

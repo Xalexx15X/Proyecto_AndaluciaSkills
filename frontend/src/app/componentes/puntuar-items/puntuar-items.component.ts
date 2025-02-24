@@ -18,6 +18,14 @@ export interface Evaluacion {
   evaluacionItems: EvaluacionItem[];
 }
 
+// Añade esta interfaz
+interface Item {
+  idItem: number;
+  descripcion: string;
+  puntuacionMaxima: number;
+  peso: number; // porcentaje del item
+}
+
 @Component({
   selector: 'app-puntuar-items',
   standalone: true,
@@ -26,7 +34,7 @@ export interface Evaluacion {
   styleUrls: ['./puntuar-items.component.css']
 })
 export class PuntuarItemsComponent implements OnInit {
-  items: any[] = [];
+  items: Item[] = [];
   participanteId: number = 0;
   pruebaId: number = 0;
   userId: number = 0;
@@ -129,7 +137,11 @@ export class PuntuarItemsComponent implements OnInit {
   private validarPuntuaciones(): boolean {
     return Object.keys(this.valoraciones).every(idItem => {
       const item = this.items.find(i => i.idItem === +idItem);
-      return item && this.valoraciones[+idItem] <= item.puntuacionMaxima;
+      if (!item) return false;
+      
+      // Calcular el valor máximo basado en el porcentaje
+      const valorMaximo = (item.peso / 10); // Si peso es 30%, máximo será 3
+      return this.valoraciones[+idItem] >= 0 && this.valoraciones[+idItem] <= valorMaximo;
     });
   }
 }

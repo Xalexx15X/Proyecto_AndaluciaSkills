@@ -1,7 +1,6 @@
 package com.andaluciaskills.andaluciasckills.Service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.andaluciaskills.andaluciasckills.Dto.DtoEvaluacionItem;
 import com.andaluciaskills.andaluciasckills.Entity.EvaluacionItem;
 import com.andaluciaskills.andaluciasckills.Mapper.EvaluacionItemMapper;

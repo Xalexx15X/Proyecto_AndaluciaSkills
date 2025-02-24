@@ -1,6 +1,7 @@
 package com.andaluciaskills.andaluciasckills.Controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ import com.andaluciaskills.andaluciasckills.Service.EvaluacionService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/evaluacion")
+@RequestMapping("/api/evaluaciones")
 @RequiredArgsConstructor
 public class EvaluacionController {
     
@@ -84,5 +85,24 @@ public class EvaluacionController {
         
         evaluacionService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/ganadores")
+    public ResponseEntity<List<Map<String, Object>>> obtenerGanadores() {
+        try {
+            List<Map<String, Object>> ganadores = evaluacionService.obtenerGanadores();
+            if (ganadores.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(ganadores);
+        } catch (Exception e) {
+            System.err.println("Error al obtener ganadores: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(List.of(Map.of(
+                    "error", "Error al obtener los ganadores",
+                    "mensaje", e.getMessage()
+                )));
+        }
     }
 }

@@ -17,21 +17,18 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.validation.Valid;
 
 
-@RestController // Indica que es un controlador REST
-@RequestMapping("/api/auth") // Ruta base para todos los endpoints de este controlador
-@RequiredArgsConstructor // Genera constructor con campos final automáticamente
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor 
 public class AuthController {
 
-    // Añade esta línea con las otras dependencias
     private final PasswordEncoder passwordEncoder;
     
-    // Gestiona la autenticación de usuarios
     private final AuthenticationManager authenticationManager;
-    // Genera y valida tokens JWT
     private final JwtTokenProvider jwtTokenProvider;
-    // Accede a operaciones de usuario en base de datos
     private final UserService userService;
 
     @PostMapping("/login")
@@ -57,7 +54,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserRegisterDTO userRegisterDTO) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegisterDTO userRegisterDTO) {
         try {
             userService.registerUser(userRegisterDTO);
             return ResponseEntity.ok("Usuario registrado exitosamente");

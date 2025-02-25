@@ -23,6 +23,7 @@ export class CrearExpertoComponent implements OnInit {
   };
   especialidades: any[] = [];
   isEditing = false;
+  dniError: string = '';
 
   constructor(
     private expertoService: ExpertoService,
@@ -100,13 +101,62 @@ export class CrearExpertoComponent implements OnInit {
     }
 }
 
-  private validarFormulario(): boolean {
-      if (!this.experto.username || !this.experto.password || 
-          !this.experto.nombre || !this.experto.apellidos || 
-          !this.experto.dni || !this.experto.especialidad_id_especialidad) {
-          console.error('Todos los campos son obligatorios');
-          return false;
+  validarDNI(dni: string): { isValid: boolean, message: string } {
+    const letrasValidas = "TRWAGMYFPDXBNJZSQVHLCKE";
+    
+    if (!dni) {
+      return { isValid: false, message: 'El DNI es obligatorio' };
+    }
+    
+    dni = dni.trim().toUpperCase();
+    
+    if (dni.length !== 9) {
+      return { isValid: false, message: 'El DNI debe tener 9 caracteres (8 números y 1 letra)' };
+    }
+
+    const match = dni.match(/^(\d{8})([A-Z])$/);
+    if (!match) {
+      if (!/^\d{8}$/.test(dni.slice(0, 8))) {
+        return { isValid: false, message: 'Los primeros 8 caracteres deben ser números' };
       }
-      return true;
+      if (!/[A-Z]/.test(dni[8])) {
+        return { isValid: false, message: 'El último carácter debe ser una letra' };
+      }
+      return { isValid: false, message: 'DNI no válido' };
+    }
+
+    const numero = parseInt(match[1]);
+    const letraProporcionada = match[2];
+    const letraCalculada = letrasValidas.charAt(numero % 23);
+    
+    if (letraCalculada !== letraProporcionada) {
+      return { isValid: false, message: 'DNI no válido' };
+    }
+
+    return { isValid: true, message: '' };
+  }
+
+  onDniChange() {
+    if (this.experto.dni) {
+      const validacion = this.validarDNI(this.experto.dni);
+      this.dniError = validacion.message;
+    } else {
+      this.dniError = 'El DNI es obligatorio';
+    }
+  }
+
+  private validarFormulario(): boolean {
+    if (!this.experto.username || 
+        (!this.isEditing && !this.experto.password) || 
+        !this.experto.nombre || 
+        !this.experto.apellidos || 
+        !this.experto.dni || 
+        !this.experto.especialidad_id_especialidad) {
+      console.error('Todos los campos son obligatorios');
+      return false;
+    }
+
+    // Validar DNI
+    return this.validarDNI(this.experto.dni).isValid;
   }
 }

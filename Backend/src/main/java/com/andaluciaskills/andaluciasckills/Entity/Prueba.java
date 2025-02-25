@@ -1,8 +1,8 @@
 package com.andaluciaskills.andaluciasckills.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-
 
 @Entity
 @Data
@@ -13,7 +13,8 @@ public class Prueba {
     @Column(name = "id_prueba")
     private Integer idPrueba;
 
-    @Column(name = "enunciado")
+    @NotBlank(message = "El enunciado es obligatorio")
+    @Column(name = "enunciado", nullable = false)
     private String enunciado;
 
     @Column(name = "puntuacion_maxima")

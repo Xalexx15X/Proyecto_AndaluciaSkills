@@ -47,15 +47,18 @@
         id="dni"
         name="dni"
         [(ngModel)]="experto.dni"
-        #dni="ngModel"
-        required
-        pattern="^[0-9]{8}[A-Za-z]$"
-        [ngClass]="{'is-invalid': dni.invalid && (dni.dirty || dni.touched)}"
+        (ngModelChange)="onDniChange()"
+        maxlength="9"
+        [ngClass]="{'is-invalid': dniError, 'is-valid': experto.dni && !dniError}"
+        placeholder="12345678A"
       >
-      <div class="invalid-feedback" *ngIf="dni.invalid && (dni.dirty || dni.touched)">
-        <div *ngIf="dni.errors?.['required']">El DNI es obligatorio</div>
-        <div *ngIf="dni.errors?.['pattern']">El DNI debe tener 8 números seguidos de una letra</div>
+      <div class="invalid-feedback" *ngIf="dniError">
+        {{ dniError }}
       </div>
+      <div class="valid-feedback" *ngIf="experto.dni && !dniError">
+        DNI válido
+      </div>
+      <small class="form-text text-muted">Formato: 8 números seguidos de una letra (ej: 12345678A)</small>
     </div>
 
     <div class="mb-3">

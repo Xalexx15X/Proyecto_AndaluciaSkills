@@ -11,6 +11,8 @@ import com.andaluciaskills.andaluciasckills.Service.EspecialidadService;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/especialidades")
 @RequiredArgsConstructor
@@ -36,7 +38,7 @@ public class EspecialidadController{
     }
 
     @PostMapping("/CrearEspecialidad")
-    public ResponseEntity<DtoEspecialidades> createEspecialidad(@RequestBody DtoEspecialidades dto) {
+    public ResponseEntity<?> crearEspecialidad(@Valid @RequestBody DtoEspecialidades dto) {
         if (dto.getIdEspecialidad() != null) {
             throw new EspecialidadBadRequestException("No se puede crear una especialidad con un ID ya existente");
         }
@@ -47,7 +49,7 @@ public class EspecialidadController{
     @PutMapping("ModificarEspecialidad/{id}")
     public ResponseEntity<DtoEspecialidades> updateEspecialidad(
             @PathVariable Integer id, 
-            @RequestBody DtoEspecialidades dto) {
+            @Valid @RequestBody DtoEspecialidades dto) {
         
         if (!id.equals(dto.getIdEspecialidad())) {
             throw new EspecialidadBadRequestException("El ID de la ruta no coincide con el ID del objeto");

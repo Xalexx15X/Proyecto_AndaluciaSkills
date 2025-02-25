@@ -1,15 +1,47 @@
 <div class="container mt-4">
+  <h2 class="text-center mb-4">{{isEditing ? 'Editar' : 'Crear'}} Especialidad</h2>
   <form (ngSubmit)="onSubmit()" #especialidadForm="ngForm">
     <div class="form-group mb-3">
-      <label for="nombre" class="form-label">Nombre</label>
-      <input type="text" [(ngModel)]="especialidad.nombre" name="nombre" class="form-control" required>
-      <label for="nombre" class="form-label">Codigo</label>
-      <input type="text" [(ngModel)]="especialidad.codigo" name="codigo" class="form-control" required>
+      <label for="nombre" class="form-label">Nombre *</label>
+      <input 
+        type="text" 
+        class="form-control"
+        id="nombre"
+        [(ngModel)]="especialidad.nombre"
+        name="nombre"
+        (ngModelChange)="onNombreChange()"
+        required
+        [ngClass]="{'is-invalid': nombreError, 'is-valid': especialidad.nombre && !nombreError}"
+      >
+      <div class="invalid-feedback" *ngIf="nombreError">
+        {{ nombreError }}
+      </div>
     </div>
 
-    <button type="submit" class="btn btn-primary w-100" [disabled]="!especialidadForm.form.valid">
+    <div class="form-group mb-3">
+      <label for="codigo" class="form-label">Código *</label>
+      <input 
+        type="text" 
+        class="form-control"
+        id="codigo"
+        [(ngModel)]="especialidad.codigo"
+        name="codigo"
+        (ngModelChange)="onCodigoChange()"
+        required
+        maxlength="4"
+        [ngClass]="{'is-invalid': codigoError, 'is-valid': especialidad.codigo && !codigoError}"
+      >
+      <div class="invalid-feedback" *ngIf="codigoError">
+        {{ codigoError }}
+      </div>
+      <small class="form-text text-muted">El código debe tener máximo 4 caracteres</small>
+    </div>
+
+    <button 
+      type="submit" 
+      class="btn btn-primary w-100" 
+      [disabled]="nombreError || codigoError || !especialidad.nombre || !especialidad.codigo">
       {{isEditing ? 'Actualizar' : 'Crear'}}
     </button>
-    
   </form>
 </div>

@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+
+
 @RestController
 @RequestMapping("/api/participantes")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -37,7 +40,7 @@ public class ParticipanteController {
     }
 
     @PostMapping("/CrearParticipante")
-    public ResponseEntity<DtoParticipante> createParticipante(@RequestBody DtoParticipante dto) {
+    public ResponseEntity<DtoParticipante> createParticipante(@Valid @RequestBody DtoParticipante dto) {
         if (dto.getIdParticipante() != null) {
             throw new ParticipanteBadRequestException("No se puede crear un participante con un ID ya existente");
         }
@@ -48,7 +51,7 @@ public class ParticipanteController {
     @PutMapping("/ModificarParticipante/{id}")
     public ResponseEntity<DtoParticipante> updateParticipante(
             @PathVariable Integer id,
-            @RequestBody DtoParticipante dto) {
+            @Valid @RequestBody DtoParticipante dto) {
     
         System.out.println("ID de la ruta: " + id);
         System.out.println("DTO recibido: " + dto);

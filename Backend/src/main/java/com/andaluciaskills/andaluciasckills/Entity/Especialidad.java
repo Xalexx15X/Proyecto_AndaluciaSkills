@@ -1,8 +1,9 @@
 package com.andaluciaskills.andaluciasckills.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-
 
 @Entity
 @Data
@@ -13,10 +14,13 @@ public class Especialidad {
     @Column(name = "id_especialidad")
     private Integer idEspecialidad;
 
-    @Column(name = "codigo")
+    @NotBlank(message = "El código es obligatorio")
+    @Size(max = 4, message = "El código no puede tener más de 4 caracteres")
+    @Column(name = "codigo", nullable = false)
     private String codigo;
 
-    @Column(name = "nombre")
+    @NotBlank(message = "El nombre es obligatorio")
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
 }

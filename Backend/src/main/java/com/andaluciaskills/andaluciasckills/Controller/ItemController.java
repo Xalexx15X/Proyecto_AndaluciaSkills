@@ -22,13 +22,28 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @RequestMapping("/api/items")
 @RequiredArgsConstructor
+@Tag(name = "Items", description = "API para la gestión de items de pruebas")
 public class ItemController {
     private final ItemService itemService;
 
+    @Operation(
+        summary = "Listar todos los items",
+        description = "Obtiene una lista de todos los items registrados en el sistema"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Lista de items recuperada con éxito"),
+        @ApiResponse(responseCode = "404", description = "No se encontraron items")
+    })
     @GetMapping
     public ResponseEntity<List<DtoItem>> getAllItems() {
         List<DtoItem> result = itemService.findAll();
@@ -38,6 +53,14 @@ public class ItemController {
         return ResponseEntity.ok(result);
     }
 
+    @Operation(
+        summary = "Buscar item por ID",
+        description = "Recupera un item específico mediante su ID"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Item encontrado"),
+        @ApiResponse(responseCode = "404", description = "Item no encontrado")
+    })
     @GetMapping("/BuscarItem/{id}")
     public ResponseEntity<DtoItem> getItem(@PathVariable Integer id) {
         return ResponseEntity.ok(
@@ -46,6 +69,21 @@ public class ItemController {
         );
     }
 
+    @Operation(
+        summary = "Crear nuevo item",
+        description = "Crea un nuevo item con los datos proporcionados"
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "201", 
+            description = "Item creado correctamente",
+            content = @Content(schema = @Schema(implementation = DtoItem.class))
+        ),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Datos del item inválidos o ID ya existente"
+        )
+    })
     @PostMapping("/CrearItem")
     public ResponseEntity<DtoItem> createItem(@RequestBody DtoItem dto) {
         if (dto.getIdItem() != null) {
@@ -55,10 +93,17 @@ public class ItemController {
             .body(itemService.save(dto));
     }
 
+    @Operation(
+        summary = "Modificar item",
+        description = "Actualiza los datos de un item existente"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Item actualizado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos del item inválidos"),
+        @ApiResponse(responseCode = "404", description = "Item no encontrado")
+    })
     @PutMapping("ModificarItem/{id}")
-    public ResponseEntity<DtoItem> updateItem(
-            @PathVariable Integer id, 
-            @RequestBody DtoItem dto) {
+    public ResponseEntity<DtoItem> updateItem(@PathVariable Integer id, @RequestBody DtoItem dto) {
         
         if (!id.equals(dto.getIdItem())) {
             throw new ItemBadRequestException("El ID de la ruta no coincide con el ID del objeto");
@@ -74,6 +119,14 @@ public class ItemController {
         );
     }
 
+    @Operation(
+        summary = "Eliminar item",
+        description = "Elimina un item existente mediante su ID"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Item eliminado correctamente"),
+        @ApiResponse(responseCode = "404", description = "Item no encontrado")
+    })
     @DeleteMapping("BorrarItem/{id}")
     public ResponseEntity<?> deleteItem(@PathVariable Integer id) {
         itemService.findById(id)
@@ -82,6 +135,14 @@ public class ItemController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+        summary = "Obtener items por prueba",
+        description = "Recupera todos los items asociados a una prueba específica"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Items recuperados correctamente"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @GetMapping("/porPrueba/{pruebaId}")
     public ResponseEntity<List<DtoItem>> getItemsByPrueba(@PathVariable Integer pruebaId) {
         try {

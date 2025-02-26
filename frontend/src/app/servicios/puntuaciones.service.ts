@@ -36,7 +36,7 @@ export interface EvaluacionItem {
   providedIn: 'root'
 })
 export class PuntuacionesService {
-  private apiUrl = 'http://localhost:9000/api';
+  private apiUrl = '/api';
 
   constructor(
     private http: HttpClient,

@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
   providedIn: 'root'
 })
 export class PruebasService {
-  private apiUrl = 'http://localhost:9000/api/pruebas';
+  private apiUrl = '/api/pruebas';
 
   constructor(
     private http: HttpClient,
@@ -91,6 +91,14 @@ export class PruebasService {
           return throwError(() => error);
         })
       );
+  }
+
+  descargarPlantillaEvaluacion(pruebaId: number): Observable<Blob> {
+    const headers = this.getAuthHeaders();
+    return this.http.get(`${this.apiUrl}/plantilla-evaluacion/${pruebaId}`, {
+        responseType: 'blob',
+        headers: headers
+    });
   }
 
 }

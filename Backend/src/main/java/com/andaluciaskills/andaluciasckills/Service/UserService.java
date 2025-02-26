@@ -99,7 +99,7 @@ public class UserService implements UserBaseService {
         user.setApellidos(dto.getApellidos());
         user.setDni(dto.getDni());
         user.setRole(dto.getRole());
-        user.setEspecialidad(especialidad); // Aquí establecemos la relación correctamente
+        user.setEspecialidad(especialidad);
 
         return userRepository.save(user);
     }

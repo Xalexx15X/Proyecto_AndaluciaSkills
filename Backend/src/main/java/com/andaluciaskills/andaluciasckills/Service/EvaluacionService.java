@@ -16,17 +16,15 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-@Service
+@Service // Marca la clase como un servicio de Spring
 public class EvaluacionService implements EvaluacionBaseService {
-    private final EvaluacionRepository evaluacionRepository;
-    private final EvaluacionMapper evaluacionMapper;
-    private final EvaluacionItemRepository evaluacionItemRepository;
-    private final ItemService itemService; // Añadir esta dependencia
+    private final EvaluacionRepository evaluacionRepository; // Para operaciones en BD
+    private final EvaluacionMapper evaluacionMapper; // Para convertir entre Entity y DTO
+    private final EvaluacionItemRepository evaluacionItemRepository; // Para items de evaluación
+    private final ItemService itemService; // Para obtener información de los items
 
-    public EvaluacionService(EvaluacionRepository evaluacionRepository, 
-                           EvaluacionMapper evaluacionMapper,
-                           EvaluacionItemRepository evaluacionItemRepository,
-                           ItemService itemService) {
+    public EvaluacionService(EvaluacionRepository evaluacionRepository, EvaluacionMapper evaluacionMapper, EvaluacionItemRepository evaluacionItemRepository, ItemService itemService) 
+    { 
         this.evaluacionRepository = evaluacionRepository;
         this.evaluacionMapper = evaluacionMapper;
         this.evaluacionItemRepository = evaluacionItemRepository;
@@ -34,7 +32,10 @@ public class EvaluacionService implements EvaluacionBaseService {
     }
 
     public Double calcularNotaFinal(Integer evaluacionId) {
+        // 1. Obtiene todos los items de la evaluación
         List<EvaluacionItem> items = evaluacionItemRepository.findByEvaluacionIdEvaluacion(evaluacionId);
+        
+        // 2. Si no hay items, devuelve 0
         if (items.isEmpty()) {
             return 0.0;
         }
@@ -42,22 +43,24 @@ public class EvaluacionService implements EvaluacionBaseService {
         double notaFinal = 0.0;
         double sumaPesos = 0.0;
 
+        // 3. Para cada item de evaluación
         for (EvaluacionItem evaluacionItem : items) {
             if (evaluacionItem.getValoracion() != null) {
-                // Obtener el Item y su peso
+                // 4. Obtiene la información del item
                 Optional<DtoItem> item = itemService.findById(evaluacionItem.getItem_idItem());
                 
                 if (item.isPresent()) {
-                    Integer peso = item.get().getPeso(); // Peso en porcentaje (ejemplo: 30 para 30%)
+                    // 5. Obtiene los valores necesarios
+                    Integer peso = item.get().getPeso(); // Ejemplo: 30 para 30%
                     Double puntuacionMaxima = item.get().getPuntuacionMaxima();
                     Double valoracion = evaluacionItem.getValoracion();
                     
-                    // Calculamos la nota ponderada
-                    // (valoración / puntuación máxima) * peso
+                    // 6. Calcula la nota ponderada
                     double notaPonderada = (valoracion / puntuacionMaxima) * peso;
                     notaFinal += notaPonderada;
                     sumaPesos += peso;
                     
+                    // 7. Logs para debugging
                     System.out.println("Item: " + item.get().getDescripcion());
                     System.out.println("Peso: " + peso + "%");
                     System.out.println("Puntuación máxima: " + puntuacionMaxima);
@@ -67,20 +70,20 @@ public class EvaluacionService implements EvaluacionBaseService {
             }
         }
         
-        // Normalizar la nota final (por si los pesos no suman 100)
+        // 8. Normaliza la nota final
         if (sumaPesos > 0) {
             notaFinal = (notaFinal / sumaPesos) * 100;
         }
         
-        // Redondear a 2 decimales
-        notaFinal = Math.round(notaFinal * 100.0) / 100.0;
-        
-        System.out.println("Nota final calculada para evaluación " + evaluacionId + ": " + notaFinal);
-        return notaFinal;
+        // 9. Redondea a 2 decimales
+        return Math.round(notaFinal * 100.0) / 100.0;
     }
 
     public void actualizarNotaFinal(Integer evaluacionId) {
+        // 1. Calcula la nueva nota final
         Double notaFinal = calcularNotaFinal(evaluacionId);
+        
+        // 2. Busca la evaluación y actualiza su nota
         evaluacionRepository.findById(evaluacionId).ifPresent(evaluacion -> {
             evaluacion.setNotaFinal(notaFinal);
             evaluacionRepository.save(evaluacion);
@@ -90,14 +93,20 @@ public class EvaluacionService implements EvaluacionBaseService {
     @Override
     public DtoEvaluacion save(DtoEvaluacion dto) {
         try {
+            // 1. Convierte DTO a entidad
             Evaluacion evaluacion = evaluacionMapper.toEntity(dto);
+            
+            // 2. Guarda la evaluación
             Evaluacion savedEvaluacion = evaluacionRepository.save(evaluacion);
             
-            // Calcular y actualizar nota final
+            // 3. Calcula y actualiza la nota final
             Double notaFinal = calcularNotaFinal(savedEvaluacion.getIdEvaluacion());
             savedEvaluacion.setNotaFinal(notaFinal);
+            
+            // 4. Guarda de nuevo con la nota final actualizada
             savedEvaluacion = evaluacionRepository.save(savedEvaluacion);
             
+            // 5. Convierte y devuelve el resultado
             return evaluacionMapper.toDto(savedEvaluacion);
         } catch (Exception e) {
             System.err.println("Error al guardar evaluación: " + e.getMessage());
@@ -247,21 +256,25 @@ public class EvaluacionService implements EvaluacionBaseService {
     }
 
     public List<Map<String, Object>> obtenerGanadores() {
+        // 1. Obtiene todos los resultados de la base de datos
         List<Map<String, Object>> todosLosResultados = evaluacionRepository.findGanadoresPorEspecialidad();
         
-        // Usar un Map para guardar solo el mejor de cada especialidad
+        // 2. Crea un mapa para almacenar solo el mejor de cada especialidad
         Map<String, Map<String, Object>> ganadoresPorEspecialidad = new HashMap<>();
         
+        // 3. Procesa cada resultado
         for (Map<String, Object> resultado : todosLosResultados) {
             String especialidad = (String) resultado.get("especialidad");
             Double notaMedia = (Double) resultado.get("notaMedia");
             
+            // 4. Si no hay ganador para esta especialidad o este tiene mejor nota
             if (!ganadoresPorEspecialidad.containsKey(especialidad) || 
                 (Double) ganadoresPorEspecialidad.get(especialidad).get("notaMedia") < notaMedia) {
                 ganadoresPorEspecialidad.put(especialidad, resultado);
             }
         }
         
+        // 5. Devuelve solo los ganadores
         return new ArrayList<>(ganadoresPorEspecialidad.values());
     }
 }

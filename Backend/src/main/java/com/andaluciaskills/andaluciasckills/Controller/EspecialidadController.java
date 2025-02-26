@@ -12,14 +12,29 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @RequestMapping("/api/especialidades")
 @RequiredArgsConstructor
+@Tag(name = "Especialidades", description = "API para la gestión de especialidades")
 public class EspecialidadController{
     
     private final EspecialidadService especialidadService;
 
+    @Operation(
+        summary = "Obtener todas las especialidades",
+        description = "Recupera la lista completa de especialidades disponibles"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Lista de especialidades recuperada con éxito"),
+        @ApiResponse(responseCode = "404", description = "No se encontraron especialidades")
+    })
     @GetMapping
     public ResponseEntity<List<DtoEspecialidades>> getAllEspecialidades() {
         List<DtoEspecialidades> result = especialidadService.findAll();
@@ -29,6 +44,14 @@ public class EspecialidadController{
         return ResponseEntity.ok(result);
     }
 
+    @Operation(
+        summary = "Buscar especialidad por ID",
+        description = "Recupera una especialidad específica mediante su ID"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Especialidad encontrada"),
+        @ApiResponse(responseCode = "404", description = "Especialidad no encontrada")
+    })
     @GetMapping("/BuscarEspecialidad/{id}")
     public ResponseEntity<DtoEspecialidades> getEspecialidad(@PathVariable Integer id) {
         return ResponseEntity.ok(
@@ -37,6 +60,21 @@ public class EspecialidadController{
         );
     }
 
+    @Operation(
+        summary = "Crear nueva especialidad",
+        description = "Crea una nueva especialidad con los datos proporcionados"
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "201", 
+            description = "Especialidad creada correctamente",
+            content = @Content(schema = @Schema(implementation = DtoEspecialidades.class))
+        ),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Datos de especialidad inválidos"
+        )
+    })
     @PostMapping("/CrearEspecialidad")
     public ResponseEntity<?> crearEspecialidad(@Valid @RequestBody DtoEspecialidades dto) {
         if (dto.getIdEspecialidad() != null) {
@@ -46,6 +84,15 @@ public class EspecialidadController{
             .body(especialidadService.save(dto));
     }
 
+    @Operation(
+        summary = "Modificar especialidad existente",
+        description = "Actualiza los datos de una especialidad existente"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Especialidad actualizada correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos de especialidad inválidos"),
+        @ApiResponse(responseCode = "404", description = "Especialidad no encontrada")
+    })
     @PutMapping("ModificarEspecialidad/{id}")
     public ResponseEntity<DtoEspecialidades> updateEspecialidad(
             @PathVariable Integer id, 
@@ -65,6 +112,14 @@ public class EspecialidadController{
         );
     }
 
+    @Operation(
+        summary = "Eliminar especialidad",
+        description = "Elimina una especialidad existente mediante su ID"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Especialidad eliminada correctamente"),
+        @ApiResponse(responseCode = "404", description = "Especialidad no encontrada")
+    })
     @DeleteMapping("BorrarEspecialidad/{id}")
     public ResponseEntity<?> deleteEspecialidad(@PathVariable Integer id) {
         especialidadService.findById(id)

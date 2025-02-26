@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: andaluciaskills-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: andaluciaskills.local
+    http:
+      paths:
+      - path: /api/?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: backend
+            port:
+              number: 9000
+      - path: /?(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
+
+
+## Hacer rollback a una versión específica
+#kubectl rollout undo deployment/frontend --to-revision=1
+
+# Volver a la versión más reciente (v2)
+#kubectl rollout undo deployment/frontend --to-revision=2

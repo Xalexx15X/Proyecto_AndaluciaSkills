@@ -17,6 +17,8 @@ export class GestionarPruebasComponent implements OnInit {
   pruebaForm: FormGroup;
   loading = false;
   error = '';
+  pruebaCreada = false;
+  pruebaActual: any = null;
 
   constructor(
     private fb: FormBuilder,
@@ -45,7 +47,7 @@ export class GestionarPruebasComponent implements OnInit {
     const itemForm = this.fb.group({
       descripcion: ['', [Validators.required, Validators.minLength(5)]],
       peso: ['', [Validators.required, Validators.min(1), Validators.max(100)]],
-      gradosConsecucion: ['', [Validators.required, Validators.min(0), Validators.max(100)]]
+      grados_consecucion: ['', [Validators.required, Validators.min(0), Validators.max(100)]] // Cambiar este nombre
     });
     this.items.push(itemForm);
   }
@@ -73,48 +75,40 @@ export class GestionarPruebasComponent implements OnInit {
         especialidad_idEspecialidad: this.authService.getEspecialidadFromToken()
     };
 
-    console.log('1. Datos de la prueba a crear:', pruebaData);
-
     this.pruebasService.createPrueba(pruebaData).pipe(
         switchMap(pruebaCreada => {
-            console.log('2. Prueba creada:', pruebaCreada);
+            this.pruebaActual = pruebaCreada; // Guardamos la prueba creada
             
-            interface ItemForm {
-                descripcion: string;
-                peso: string | number;
-                gradosConsecucion: string | number;
-            }
             // Mapear los items asegurando que los tipos sean correctos
-            const items = this.items.value.map((item: ItemForm) => ({
+            const items = this.items.value.map((item: any) => ({
                 descripcion: item.descripcion,
-                peso: Number(item.peso),  // Convertir a número
-                gradosConsecucion: Number(item.gradosConsecucion),  // Convertir a número
-                prueba_idPrueba: pruebaCreada.idPrueba  // Añadir el ID de la prueba
+                peso: Number(item.peso),
+                grados_consecucion: Number(item.grados_consecucion),
+                prueba_idPrueba: pruebaCreada.idPrueba
             }));
 
-            console.log('3. Items a crear:', items);
             return this.pruebasService.createItemsForPrueba(pruebaCreada.idPrueba, items);
         })
     ).subscribe({
         next: (response) => {
-            console.log('4. Items creados:', response);
             this.loading = false;
-            this.pruebaForm.reset();
-            this.items.clear();
-            this.agregarItem();
-            this.router.navigate(['/admin/pruebas']);
+            this.pruebaCreada = true;
         },
         error: (error) => {
             console.error('Error detallado:', error);
             this.loading = false;
-            if (error.error && error.error.message) {
-                this.error = error.error.message;
-            } else {
-                this.error = 'Error al crear los items de la prueba';
-            }
+            this.error = 'Error al crear la prueba o sus items';
         }
     });
 }
+
+  nuevaPrueba() {
+    this.pruebaForm.reset();
+    this.pruebaCreada = false;
+    this.pruebaActual = null;
+    this.items.clear();
+    this.agregarItem();
+  }
 
   get formInvalid(): boolean {
     if (this.pruebaForm.invalid) return true;
@@ -139,5 +133,28 @@ export class GestionarPruebasComponent implements OnInit {
         control.markAsTouched();
       }
     });
+  }
+
+  descargarPlantilla() {
+    if (!this.pruebaActual?.idPrueba) {
+        this.error = 'Primero debe crear la prueba';
+        return;
+    }
+
+    this.pruebasService.descargarPlantillaEvaluacion(this.pruebaActual.idPrueba)
+        .subscribe({
+            next: (blob: Blob) => {
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'plantilla-evaluacion.pdf';
+                link.click();
+                window.URL.revokeObjectURL(url);
+            },
+            error: (error) => {
+                console.error('Error al descargar la plantilla:', error);
+                this.error = 'Error al descargar la plantilla de evaluación';
+            }
+        });
   }
 }

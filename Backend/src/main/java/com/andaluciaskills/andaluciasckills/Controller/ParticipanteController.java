@@ -13,16 +13,30 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import jakarta.validation.Valid;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @RequestMapping("/api/participantes")
 @CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
+@Tag(name = "Participantes", description = "API para la gestión de participantes")
 public class ParticipanteController {
     
     private final ParticipanteService participanteService;
 
+    @Operation(
+        summary = "Listar todos los participantes",
+        description = "Obtiene una lista de todos los participantes registrados en el sistema"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Lista de participantes recuperada con éxito"),
+        @ApiResponse(responseCode = "404", description = "No se encontraron participantes")
+    })
     @GetMapping
     public ResponseEntity<List<DtoParticipante>> getAllParticipantes() {
         List<DtoParticipante> result = participanteService.findAll();
@@ -32,6 +46,14 @@ public class ParticipanteController {
         return ResponseEntity.ok(result);
     }
 
+    @Operation(
+        summary = "Buscar participante por ID",
+        description = "Recupera un participante específico mediante su ID"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Participante encontrado"),
+        @ApiResponse(responseCode = "404", description = "Participante no encontrado")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<DtoParticipante> getParticipante(@PathVariable Integer id) {
         return participanteService.findById(id)
@@ -39,6 +61,21 @@ public class ParticipanteController {
             .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(
+        summary = "Crear nuevo participante",
+        description = "Crea un nuevo participante con los datos proporcionados"
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "201", 
+            description = "Participante creado correctamente",
+            content = @Content(schema = @Schema(implementation = DtoParticipante.class))
+        ),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Datos del participante inválidos o ID ya existente"
+        )
+    })
     @PostMapping("/CrearParticipante")
     public ResponseEntity<DtoParticipante> createParticipante(@Valid @RequestBody DtoParticipante dto) {
         if (dto.getIdParticipante() != null) {
@@ -48,6 +85,15 @@ public class ParticipanteController {
             .body(participanteService.save(dto));
     }
 
+    @Operation(
+        summary = "Modificar participante",
+        description = "Actualiza los datos de un participante existente"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Participante actualizado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos del participante inválidos"),
+        @ApiResponse(responseCode = "404", description = "Participante no encontrado")
+    })
     @PutMapping("/ModificarParticipante/{id}")
     public ResponseEntity<DtoParticipante> updateParticipante(
             @PathVariable Integer id,
@@ -68,6 +114,14 @@ public class ParticipanteController {
         return ResponseEntity.ok(updated);
     }
 
+    @Operation(
+        summary = "Eliminar participante",
+        description = "Elimina un participante existente mediante su ID"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Participante eliminado correctamente"),
+        @ApiResponse(responseCode = "404", description = "Participante no encontrado")
+    })
     @DeleteMapping("BorrarParticipante/{id}")
     public ResponseEntity<?> deleteParticipante(@PathVariable Integer id) {
         participanteService.findById(id)
@@ -76,6 +130,14 @@ public class ParticipanteController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+        summary = "Obtener participantes por especialidad",
+        description = "Recupera todos los participantes de una especialidad específica"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Participantes recuperados correctamente"),
+        @ApiResponse(responseCode = "404", description = "No se encontraron participantes para la especialidad")
+    })
     @GetMapping("/porEspecialidad/{especialidadId}")
     public ResponseEntity<List<DtoParticipante>> getParticipantesByEspecialidad(@PathVariable Integer especialidadId) {
         List<DtoParticipante> participantes = participanteService.findByEspecialidad(especialidadId);

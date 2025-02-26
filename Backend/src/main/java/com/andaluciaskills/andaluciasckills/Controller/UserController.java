@@ -20,14 +20,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "Usuarios", description = "API para la gestión de usuarios y expertos")
 public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
+    @Operation(
+        summary = "Listar todos los usuarios",
+        description = "Obtiene una lista de todos los usuarios registrados en el sistema"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Lista de usuarios recuperada con éxito"),
+        @ApiResponse(responseCode = "404", description = "No se encontraron usuarios")
+    })
     @GetMapping
     public ResponseEntity<List<DtoUser>> getAllUsers() {
         List<DtoUser> result = userService.findAll();
@@ -37,6 +53,14 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
+    @Operation(
+        summary = "Buscar usuario por ID",
+        description = "Recupera un usuario específico mediante su ID"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Usuario encontrado"),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+    })
     @GetMapping("/BuscasUser/{id}")
     public ResponseEntity<DtoUser> getUser(@PathVariable Integer id) {
         return ResponseEntity.ok(
@@ -45,8 +69,23 @@ public class UserController {
         );
     }
 
+    @Operation(
+        summary = "Crear nuevo usuario",
+        description = "Crea un nuevo usuario con los datos proporcionados"
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "201", 
+            description = "Usuario creado correctamente",
+            content = @Content(schema = @Schema(implementation = DtoUser.class))
+        ),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Datos de usuario inválidos o ID ya existente"
+        )
+    })
     @PostMapping("/CrearUser")
-    public ResponseEntity<DtoUser> createUser(@RequestBody DtoUser dto) {
+    public ResponseEntity<DtoUser> createUser(@Valid @RequestBody DtoUser dto) {
         if (dto.getIdUser() != null) {
             throw new UserBadRequestException("No se puede crear un participante con un ID ya existente");
         }
@@ -84,7 +123,14 @@ public class UserController {
         return ResponseEntity.noContent().build();
     } 
 
-    // Métodos para manejar las operaciones de expertos
+    @Operation(
+        summary = "Listar todos los expertos",
+        description = "Obtiene una lista de todos los expertos registrados"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Lista de expertos recuperada con éxito"),
+        @ApiResponse(responseCode = "404", description = "No se encontraron expertos")
+    })
     @GetMapping("/BuscarExpertos")
     public ResponseEntity<List<DtoUser>> getExpertos() {
         List<DtoUser> result = userService.findAllExpertos();
@@ -94,6 +140,14 @@ public class UserController {
         return ResponseEntity.ok(result);
     }
 
+    @Operation(
+        summary = "Buscar experto por ID",
+        description = "Recupera un experto específico mediante su ID"
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Experto encontrado"),
+        @ApiResponse(responseCode = "404", description = "Experto no encontrado")
+    })
     @GetMapping("/BuscarExperto/{id}")
     public ResponseEntity<DtoUser> getExperto(@PathVariable Integer id) {
         return ResponseEntity.ok(
@@ -102,8 +156,23 @@ public class UserController {
         );
     }
 
+    @Operation(
+        summary = "Crear nuevo experto",
+        description = "Crea un nuevo experto con los datos proporcionados"
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "201", 
+            description = "Experto creado correctamente",
+            content = @Content(schema = @Schema(implementation = DtoUser.class))
+        ),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Datos inválidos o contraseña vacía"
+        )
+    })
     @PostMapping("/CrearExperto")
-    public ResponseEntity<DtoUser> createExperto(@RequestBody DtoUser dto) {
+    public ResponseEntity<DtoUser> createExperto(@Valid @RequestBody DtoUser dto) {
         System.out.println("Datos recibidos en el backend:");
         System.out.println("Username: " + dto.getUsername());
         System.out.println("Password (sin hashear): " + dto.getPassword());

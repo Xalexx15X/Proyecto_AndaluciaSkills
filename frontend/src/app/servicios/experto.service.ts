@@ -8,7 +8,7 @@ import * as bcrypt from 'bcryptjs';
   providedIn: 'root'
 })
 export class ExpertoService {
-  private apiUrl = 'http://localhost:9000/api/users';
+  private apiUrl = '/api/users';
 
   constructor(private http: HttpClient) {}
 

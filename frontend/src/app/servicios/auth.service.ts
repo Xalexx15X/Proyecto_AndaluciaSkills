@@ -11,14 +11,14 @@ interface AuthResponse {
   especialidadId: number;
   nombre: string;    
   apellidos: string;
-  idUser: number;    // Añadido el idUser
+  idUser: number; 
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:9000/api/auth';
+  private apiUrl = '/api/auth';
   private token: string | null = null;
   private rol: string | null = null;
   private _estaLogueado = false;
@@ -78,7 +78,7 @@ export class AuthService {
         role: response.role,
         nombre: response.nombre,
         apellidos: response.apellidos,
-        idUser: response.idUser  // Asegurarnos de que se guarda el ID
+        idUser: response.idUser  
       },
       especialidadId: response.especialidadId
     };

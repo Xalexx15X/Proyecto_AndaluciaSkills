@@ -33,8 +33,23 @@ public class SecurityConfig {
             .sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Rutas públicas
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/participantes/**").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", 
+                               "/swagger-resources/**", "/webjars/**").permitAll()
+                
+                // Rutas de administrador
+                .requestMatchers("/api/especialidades/**").hasRole("ADMIN")
+                .requestMatchers("/api/users/**").hasRole("ADMIN")
+                .requestMatchers("/api/expertos/**").hasRole("ADMIN")
+                
+                // Rutas de experto
+                .requestMatchers("/api/pruebas/**").hasAnyRole("ADMIN", "EXPERTO")
+                .requestMatchers("/api/evaluaciones/**").hasAnyRole("ADMIN", "EXPERTO")
+                .requestMatchers("/api/evaluacionItem/**").hasAnyRole("ADMIN", "EXPERTO")
+                
+                // Cualquier otra ruta requiere autenticación
                 .anyRequest().authenticated())
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
@@ -56,6 +71,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin("http://andaluciaskills.local");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);

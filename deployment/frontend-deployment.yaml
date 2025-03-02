@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: alejandropm205/andaluciaskills-frontend:v2
+        image: alejandropm205/andaluciaskills-frontend:v1
         ports:
         - containerPort: 80 
 ---
@@ -30,7 +30,8 @@ spec:
     app: frontend
   ports:
   - port: 80     
-    targetPort: 80  
+    targetPort: 80
+    nodePort: 30262
 
 
 

@@ -16,14 +16,12 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: mysql:5.7
+        image: alejandropm205/andaluciaskills-bd:v1  
         ports:
         - containerPort: 3306
         env:
         - name: MYSQL_ROOT_PASSWORD
           value: "root"
-        - name: MYSQL_DATABASE
-          value: "andaluciaskills"
 ---
 apiVersion: v1
 kind: Service
@@ -43,7 +41,7 @@ metadata:
   name: backend
   labels:
     app: backend
-    version: v5
+    version: v3
 spec:
   replicas: 1
   selector:
@@ -51,19 +49,3 @@ spec:
       app: backend
   strategy:
     type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
-  template:
-    metadata:
-      labels:
-        app: backend
-        version: "v6"
-    spec:
-      initContainers:
-      - name: wait-for-mysql
-        image: busybox:1.28
-        command: ['sh', '-c', 'until nc -z mysql 3306; do echo waiting for mysql; sleep 10; done;']
-      containers:
-      - name: backend
-        image: alejandropm205/andaluciaskills-backend:v6

@@ -1,25 +1,14 @@
-FROM node:18
-
-# Instalar Angular CLI globalmente
-RUN npm install -g @angular/cli
-
+FROM node:18 AS build
 WORKDIR /app
-
-# Copiar package.json y package-lock.json
 COPY package*.json ./
-
-# Instalar dependencias
 RUN npm install
-
-# Copiar el resto del código
 COPY . .
-
-RUN ng build
+# Añadir log para verificar la estructura de directorios
+RUN npm run build && ls -la dist/
 
 FROM nginx:alpine
-COPY --from=0 /app/dist/frontend /usr/share/nginx/html
-
-EXPOSE 80  
-
+# Modificar la ruta según la estructura real
+COPY --from=build /app/dist/* /usr/share/nginx/html
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 
